@@ -1,0 +1,41 @@
+namespace Linode.Models;
+
+public record Response
+{
+    public bool Successful { get; private init; }
+
+    /// <summary>
+    /// This array lists the things that went wrong with your request. It
+    /// includes as many of the problems in the response as possible.
+    /// </summary>
+    public IReadOnlyList<ErrorResponse>? Errors { get; private init; }
+
+    internal static Response Success() => new()
+    {
+        Successful = true
+    };
+
+    internal static Response<T> Success<T>(T data) => new()
+    {
+        Successful = true,
+        Data = data
+    };
+
+    internal static Response Failure(List<ErrorResponse> errorResponse) => new()
+    {
+        Successful = false,
+        Errors = errorResponse
+    };
+
+    internal static Response<T> Failure<T>(List<ErrorResponse>? errorResponse) => new()
+    {
+        Successful = false,
+        Errors = errorResponse,
+        Data = default
+    };
+}
+
+public sealed record Response<T> : Response
+{
+    public required T? Data { get; init; }
+}
