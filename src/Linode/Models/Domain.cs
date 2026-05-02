@@ -1,5 +1,3 @@
-using Linode.Models.Internal;
-
 namespace Linode.Models;
 
 /// <summary>
