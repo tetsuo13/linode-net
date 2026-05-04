@@ -53,6 +53,14 @@ internal sealed class DomainsOperation : IDomainsOperation
     public async Task<Response<IReadOnlyList<Domain>>> List(CancellationToken cancellationToken) =>
         await _core.GetPagedResult<Domain, DomainZoneFile>(BasePath, cancellationToken).ConfigureAwait(false);
 
+    public async Task<Response<Domain>> Get(int id, CancellationToken cancellationToken)
+    {
+        using var response = await _core.HttpClient.GetAsync($"{BasePath}/{id}", cancellationToken)
+            .ConfigureAwait(false);
+
+        return await GetDomainFromResponse(response, cancellationToken).ConfigureAwait(false);
+    }
+
     public async Task<Response<Domain>> Update(int id, UpdateDomain updateDomain, CancellationToken cancellationToken)
     {
         var domainRequest = updateDomain.ToRequest();

@@ -35,6 +35,17 @@ public interface IDomainsOperation
     Task<Response<IReadOnlyList<Domain>>> List(CancellationToken cancellationToken);
 
     /// <summary>
+    /// This is a single Domain that you have registered in Linode's DNS Manager.
+    /// </summary>
+    /// <param name="id">The ID of the Domain to access.</param>
+    /// <param name="cancellationToken">
+    /// A cancellation token that can be used by other objects or threads to
+    /// receive notice of cancellation.
+    /// </param>
+    /// <returns></returns>
+    Task<Response<Domain>> Get(int id, CancellationToken cancellationToken);
+
+    /// <summary>
     /// Update information about a domain in Linode's DNS Manager.
     /// </summary>
     /// <param name="id">The ID of the domain to access.</param>
