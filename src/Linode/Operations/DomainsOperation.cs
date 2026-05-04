@@ -141,6 +141,31 @@ internal sealed class DomainsOperation : IDomainsOperation
         return Response.Success(zoneFile);
     }
 
+    public async Task<Response<Domain>> Clone(int id, string targetName, CancellationToken cancellationToken)
+    {
+        ArgumentOutOfRangeException.ThrowIfLessThan(id, 1);
+        ArgumentException.ThrowIfNullOrWhiteSpace(targetName);
+
+        if (targetName.Length > 253)
+        {
+            throw new ArgumentOutOfRangeException(nameof(targetName));
+        }
+
+        var importRequest = new CloneDomainRequest
+        {
+            TargetDomain = targetName
+        };
+        var body = JsonSerializer.Serialize(importRequest, _jsonSerializerOptions);
+
+        using var httpContent = new StringContent(body);
+        httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+        using var response = await _core.HttpClient.PostAsync($"{BasePath}/{id}/clone", httpContent, cancellationToken)
+            .ConfigureAwait(false);
+
+        return await GetDomainFromResponse(response, cancellationToken).ConfigureAwait(false);
+    }
+
     private async Task<Response<Domain>> GetDomainFromResponse(HttpResponseMessage response,
         CancellationToken cancellationToken)
     {

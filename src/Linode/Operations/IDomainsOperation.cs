@@ -91,6 +91,20 @@ public interface IDomainsOperation
     Task<Response> Delete(int id, CancellationToken cancellationToken);
 
     /// <summary>
+    /// Clones a Domain and all associated DNS records from a Domain that is
+    /// registered in Linode's DNS manager.
+    /// </summary>
+    /// <param name="id">ID of the Domain to clone.</param>
+    /// <param name="targetName">The new domain for the clone.</param>
+    /// <param name="cancellationToken">
+    /// A cancellation token that can be used by other objects or threads to
+    /// receive notice of cancellation.
+    /// </param>
+    /// <returns></returns>
+    /// <seealso href="https://techdocs.akamai.com/linode-api/reference/post-clone-domain"/>
+    Task<Response<Domain>> Clone(int id, string targetName, CancellationToken cancellationToken);
+
+    /// <summary>
     /// Returns the zone file for the last rendered zone for the specified domain.
     /// </summary>
     /// <param name="id">The ID of the Domain to access.</param>
