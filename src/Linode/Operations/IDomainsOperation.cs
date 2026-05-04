@@ -16,6 +16,7 @@ public interface IDomainsOperation
     /// receive notice of cancellation.
     /// </param>
     /// <returns>The created domain zonefile in the DNS system.</returns>
+    /// <seealso href="https://techdocs.akamai.com/linode-api/reference/post-domain"/>
     Task<Response<Domain>> Create(CreateDomain createDomain, CancellationToken cancellationToken);
 
     /// <summary>
@@ -35,6 +36,22 @@ public interface IDomainsOperation
     Task<Response<IReadOnlyList<Domain>>> List(CancellationToken cancellationToken);
 
     /// <summary>
+    /// Imports a domain zone from a remote nameserver. See Linode API
+    /// documentation for list of IPs that remote nameserver must allow zone
+    /// transfers (AXFR) from.
+    /// </summary>
+    /// <param name="name">The domain to import.</param>
+    /// <param name="remoteNameserver">The remote nameserver that allows zone transfers (AXFR).</param>
+    /// <param name="cancellationToken">
+    /// A cancellation token that can be used by other objects or threads to
+    /// receive notice of cancellation.
+    /// </param>
+    /// <returns></returns>
+    /// <seealso href="https://techdocs.akamai.com/linode-api/reference/post-import-domain"/>
+    Task<Response<Domain>> ImportFromRemoteNameserver(string name, string remoteNameserver,
+        CancellationToken cancellationToken);
+
+    /// <summary>
     /// This is a single Domain that you have registered in Linode's DNS Manager.
     /// </summary>
     /// <param name="id">The ID of the Domain to access.</param>
@@ -43,6 +60,7 @@ public interface IDomainsOperation
     /// receive notice of cancellation.
     /// </param>
     /// <returns></returns>
+    /// <seealso href="https://techdocs.akamai.com/linode-api/reference/get-domain"/>
     Task<Response<Domain>> Get(int id, CancellationToken cancellationToken);
 
     /// <summary>

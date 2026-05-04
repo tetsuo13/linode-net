@@ -53,6 +53,28 @@ internal sealed class DomainsOperation : IDomainsOperation
     public async Task<Response<IReadOnlyList<Domain>>> List(CancellationToken cancellationToken) =>
         await _core.GetPagedResult<Domain, DomainZoneFile>(BasePath, cancellationToken).ConfigureAwait(false);
 
+    public async Task<Response<Domain>> ImportFromRemoteNameserver(string name, string remoteNameserver,
+        CancellationToken cancellationToken)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        ArgumentException.ThrowIfNullOrWhiteSpace(remoteNameserver);
+
+        var importRequest = new ImportDomainRequest
+        {
+            Domain = name,
+            RemoteNameserver = remoteNameserver
+        };
+        var body = JsonSerializer.Serialize(importRequest, _jsonSerializerOptions);
+
+        using var httpContent = new StringContent(body);
+        httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+        using var response = await _core.HttpClient.PostAsync($"{BasePath}/import", httpContent, cancellationToken)
+            .ConfigureAwait(false);
+
+        return await GetDomainFromResponse(response, cancellationToken).ConfigureAwait(false);
+    }
+
     public async Task<Response<Domain>> Get(int id, CancellationToken cancellationToken)
     {
         using var response = await _core.HttpClient.GetAsync($"{BasePath}/{id}", cancellationToken)
