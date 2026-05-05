@@ -126,6 +126,43 @@ internal sealed class LinodeClient : ILinodeClient, ICore
         return Response.Success<IReadOnlyList<TModel>>(results.AsReadOnly());
     }
 
+    public async Task<Response<TModel>> GetDomainObjectFromResponse<TModel, TApiResponse>(HttpResponseMessage response,
+        CancellationToken cancellationToken)
+        where TApiResponse : IMapsTo<TModel>
+    {
+        var httpResponseError = await CheckForHttpResponseErrors<TModel>(response, cancellationToken)
+            .ConfigureAwait(false);
+
+        if (httpResponseError.HasError)
+        {
+            return httpResponseError.ErrorResponse;
+        }
+
+        var jsonResponse = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+
+        try
+        {
+            var domain = JsonSerializer.Deserialize<TApiResponse>(jsonResponse, _jsonSerializerOptions);
+
+            if (domain is null)
+            {
+                return Response.Failure<TModel>([new ErrorResponse
+                {
+                    Reason = "Error deserializing response"
+                }]);
+            }
+
+            return Response.Success(domain.ToDomain());
+        }
+        catch (Exception e)
+        {
+            return Response.Failure<TModel>([new ErrorResponse
+            {
+                Reason = $"Error deserializing response: {e.Message}"
+            }]);
+        }
+    }
+
     public async Task<string> GetChildObjectFromJson(HttpContent content, string topLevelElement,
         CancellationToken cancellationToken)
     {

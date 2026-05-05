@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Linode.Models.Internal;
+namespace Linode.Models.Domains.Internal;
 
 internal record ImportDomainRequest
 {

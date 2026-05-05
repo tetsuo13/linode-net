@@ -1,6 +1,7 @@
+using Linode.Models.Domains.Internal;
 using Linode.Models.Internal;
 
-namespace Linode.Models;
+namespace Linode.Models.Domains;
 
 public sealed record UpdateDomain
 {

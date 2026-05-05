@@ -18,6 +18,37 @@ builder.Services.AddLinodeApi(pat);
 
 Let dependency injection take care of providing the instance variable by referencing `ILinodeClient` where you need it.
 
+## Supported Operations
+
+| Operation | Status |
+| --- | --- |
+| Administration | |
+| Beta Programs | |
+| Databases | |
+| Domains | WIP |
+| Identity and Access | |
+| Images | |
+| Linode Instances | |
+| Linode Kubernetes Engine | |
+| Linode StackScripts | |
+| Longview | |
+| Maintenance | |
+| Managed | |
+| Marketplace | |
+| Monitor | |
+| Network Transfer Prices | |
+| Networking | |
+| NodeBalancers | |
+| Object Storage | |
+| Placement Groups | |
+| Profile |  |
+| Regions | |
+| Resource Locking | |
+| Support | |
+| Tags | |
+| Volumes | |
+| VPCs | |
+
 ## Copyright and License
 
 Copyright 2026 Andrei Nicholson

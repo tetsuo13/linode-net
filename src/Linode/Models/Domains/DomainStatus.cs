@@ -1,4 +1,4 @@
-namespace Linode.Models;
+namespace Linode.Models.Domains;
 
 public enum DomainStatus
 {

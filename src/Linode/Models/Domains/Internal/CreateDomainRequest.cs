@@ -1,8 +1,8 @@
 using System.Text.Json.Serialization;
 
-namespace Linode.Models.Internal;
+namespace Linode.Models.Domains.Internal;
 
-internal sealed record DomainZoneFile : IMapsTo<Domain>
+internal record CreateDomainRequest
 {
     [JsonPropertyName("axfr_ips")]
     public List<string> AxfrIps { get; init; }
@@ -11,13 +11,10 @@ internal sealed record DomainZoneFile : IMapsTo<Domain>
     public string? Description { get; init; }
 
     [JsonPropertyName("domain")]
-    public string Domain { get; init; }
+    public required string Domain { get; init; }
 
     [JsonPropertyName("expire_sec")]
     public int ExpireSec { get; init; }
-
-    [JsonPropertyName("id")]
-    public int Id { get; init; }
 
     [JsonPropertyName("master_ips")]
     public List<string> MasterIps { get; init; }
@@ -41,25 +38,5 @@ internal sealed record DomainZoneFile : IMapsTo<Domain>
     public int TtlExp { get; init; }
 
     [JsonPropertyName("type")]
-    public DomainType Type { get; init; }
-
-    public Domain ToDomain()
-    {
-        return new Domain
-        {
-            AxfrIps = AxfrIps,
-            Description = Description,
-            DomainName = Domain,
-            ExpireSec = ExpireSec,
-            Id = Id,
-            MasterIps = MasterIps,
-            RefreshSec = RefreshSec,
-            RetrySec = RetrySec,
-            SoaEmail = SoaEmail,
-            Status = Status,
-            Tags = Tags,
-            TtlExp = TtlExp,
-            Type = Type
-        };
-    }
+    public required DomainType Type { get; init; }
 }

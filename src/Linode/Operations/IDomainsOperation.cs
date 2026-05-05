@@ -1,9 +1,12 @@
 using Linode.Models;
+using Linode.Models.Domains;
 
 namespace Linode.Operations;
 
 public interface IDomainsOperation
 {
+    IDomainsRecordsOperation Records { get; }
+
     /// <summary>
     /// Adds a new Domain to Linode's DNS Manager. Linode is not a registrar,
     /// and you must own the domain before adding it here. Be sure to point

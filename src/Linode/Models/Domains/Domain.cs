@@ -1,4 +1,4 @@
-namespace Linode.Models;
+namespace Linode.Models.Domains;
 
 /// <summary>
 /// A domain zonefile in our DNS system. You must own the domain name and tell

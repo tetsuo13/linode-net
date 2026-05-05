@@ -3,7 +3,8 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Linode.Helpers;
 using Linode.Models;
-using Linode.Models.Internal;
+using Linode.Models.Domains;
+using Linode.Models.Domains.Internal;
 
 namespace Linode.Operations;
 
@@ -11,11 +12,15 @@ internal sealed class DomainsOperation : IDomainsOperation
 {
     private const string BasePath = "domains";
 
+    public IDomainsRecordsOperation Records { get; }
+
     private readonly ICore _core;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
 
     public DomainsOperation(ICore core)
     {
+        Records = new DomainsRecordsOperation(core);
+
         _core = core;
         _jsonSerializerOptions = new JsonSerializerOptions
         {
@@ -47,11 +52,12 @@ internal sealed class DomainsOperation : IDomainsOperation
 
         using var response = await _core.HttpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
 
-        return await GetDomainFromResponse(response, cancellationToken).ConfigureAwait(false);
+        return await _core.GetDomainObjectFromResponse<Domain, DomainResponse>(response, cancellationToken)
+            .ConfigureAwait(false);
     }
 
     public async Task<Response<IReadOnlyList<Domain>>> List(CancellationToken cancellationToken) =>
-        await _core.GetPagedResult<Domain, DomainZoneFile>(BasePath, cancellationToken).ConfigureAwait(false);
+        await _core.GetPagedResult<Domain, DomainResponse>(BasePath, cancellationToken).ConfigureAwait(false);
 
     public async Task<Response<Domain>> ImportFromRemoteNameserver(string name, string remoteNameserver,
         CancellationToken cancellationToken)
@@ -72,7 +78,8 @@ internal sealed class DomainsOperation : IDomainsOperation
         using var response = await _core.HttpClient.PostAsync($"{BasePath}/import", httpContent, cancellationToken)
             .ConfigureAwait(false);
 
-        return await GetDomainFromResponse(response, cancellationToken).ConfigureAwait(false);
+        return await _core.GetDomainObjectFromResponse<Domain, DomainResponse>(response, cancellationToken)
+            .ConfigureAwait(false);
     }
 
     public async Task<Response<Domain>> Get(int id, CancellationToken cancellationToken)
@@ -80,7 +87,8 @@ internal sealed class DomainsOperation : IDomainsOperation
         using var response = await _core.HttpClient.GetAsync($"{BasePath}/{id}", cancellationToken)
             .ConfigureAwait(false);
 
-        return await GetDomainFromResponse(response, cancellationToken).ConfigureAwait(false);
+        return await _core.GetDomainObjectFromResponse<Domain, DomainResponse>(response, cancellationToken)
+            .ConfigureAwait(false);
     }
 
     public async Task<Response<Domain>> Update(int id, UpdateDomain updateDomain, CancellationToken cancellationToken)
@@ -94,7 +102,8 @@ internal sealed class DomainsOperation : IDomainsOperation
         using var response = await _core.HttpClient.PutAsync($"{BasePath}/{id}", httpContent, cancellationToken)
             .ConfigureAwait(false);
 
-        return await GetDomainFromResponse(response, cancellationToken).ConfigureAwait(false);
+        return await _core.GetDomainObjectFromResponse<Domain, DomainResponse>(response, cancellationToken)
+            .ConfigureAwait(false);
     }
 
     public async Task<Response> Delete(int id, CancellationToken cancellationToken)
@@ -163,42 +172,7 @@ internal sealed class DomainsOperation : IDomainsOperation
         using var response = await _core.HttpClient.PostAsync($"{BasePath}/{id}/clone", httpContent, cancellationToken)
             .ConfigureAwait(false);
 
-        return await GetDomainFromResponse(response, cancellationToken).ConfigureAwait(false);
-    }
-
-    private async Task<Response<Domain>> GetDomainFromResponse(HttpResponseMessage response,
-        CancellationToken cancellationToken)
-    {
-        var httpResponseError = await _core.CheckForHttpResponseErrors<Domain>(response, cancellationToken)
+        return await _core.GetDomainObjectFromResponse<Domain, DomainResponse>(response, cancellationToken)
             .ConfigureAwait(false);
-
-        if (httpResponseError.HasError)
-        {
-            return httpResponseError.ErrorResponse;
-        }
-
-        var jsonResponse = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-
-        try
-        {
-            var domain = JsonSerializer.Deserialize<DomainZoneFile>(jsonResponse, _jsonSerializerOptions);
-
-            if (domain is null)
-            {
-                return Response.Failure<Domain>([new ErrorResponse
-                {
-                    Reason = "Error deserializing response"
-                }]);
-            }
-
-            return Response.Success(domain.ToDomain());
-        }
-        catch (Exception e)
-        {
-            return Response.Failure<Domain>([new ErrorResponse
-            {
-                Reason = $"Error deserializing response: {e.Message}"
-            }]);
-        }
     }
 }

@@ -31,6 +31,10 @@ internal interface ICore
         CancellationToken cancellationToken)
         where TApiResponse : IMapsTo<TModel>;
 
+    Task<Response<TModel>> GetDomainObjectFromResponse<TModel, TApiResponse>(HttpResponseMessage response,
+        CancellationToken cancellationToken)
+        where TApiResponse : IMapsTo<TModel>;
+
     Task<string> GetChildObjectFromJson(HttpContent content, string topLevelElement,
         CancellationToken cancellationToken);
 }
