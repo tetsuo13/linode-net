@@ -24,6 +24,7 @@ internal sealed class DomainsOperation : IDomainsOperation
         _core = core;
         _jsonSerializerOptions = new JsonSerializerOptions
         {
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
             Converters =
             {
                 // To avoid additional attributes, convert the names to
@@ -40,6 +41,9 @@ internal sealed class DomainsOperation : IDomainsOperation
         {
             throw new InvalidDataException($"Invalid domain, check ${nameof(CreateDomain.IsValid)} property first");
         }
+
+        return await _core.PostRequest<Domain, CreateDomainRequest, DomainResponse>($"{BasePath}",
+            createDomain.ToRequest(), cancellationToken).ConfigureAwait(false);
 
         var domainRequest = createDomain.ToRequest();
         var body = JsonSerializer.Serialize(domainRequest, _jsonSerializerOptions);

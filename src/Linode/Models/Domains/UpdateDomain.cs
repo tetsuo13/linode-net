@@ -3,7 +3,7 @@ using Linode.Models.Internal;
 
 namespace Linode.Models.Domains;
 
-public sealed record UpdateDomain
+public record UpdateDomain
 {
     public List<string> AxfrIps { get; set; }
     public string? Description { get; set; }

@@ -11,7 +11,7 @@ Uses the Microsoft.Extensions.DependencyInjection library to handle all setup. C
 ```csharp
 var builder = Host.CreateApplicationBuilder(args);
 
-// Get personal access token from AWS Secrets Manager, Key Vault, or wherever...
+// Get personal access token (PAT) from AWS Secrets Manager, Key Vault, or wherever...
 
 builder.Services.AddLinodeApi(pat);
 ```
@@ -25,7 +25,7 @@ Let dependency injection take care of providing the instance variable by referen
 | Administration | |
 | Beta Programs | |
 | Databases | |
-| Domains | WIP |
+| Domains | Completed |
 | Identity and Access | |
 | Images | |
 | Linode Instances | |

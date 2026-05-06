@@ -1,3 +1,4 @@
+using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Linode.Helpers;
@@ -24,6 +25,7 @@ internal sealed class LinodeClient : ILinodeClient, ICore
         _jsonSerializerOptions = new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true,
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
             Converters =
             {
                 new JsonStringEnumConverter()
@@ -31,7 +33,8 @@ internal sealed class LinodeClient : ILinodeClient, ICore
         };
     }
 
-    public async Task<(bool HasError, Response<T> ErrorResponse)> CheckForHttpResponseErrors<T>(HttpResponseMessage httpResponse,
+    public async Task<(bool HasError, Response<T> ErrorResponse)> CheckForHttpResponseErrors<T>(
+        HttpResponseMessage httpResponse,
         CancellationToken cancellationToken)
     {
         if (httpResponse.IsSuccessStatusCode)
@@ -103,18 +106,16 @@ internal sealed class LinodeClient : ILinodeClient, ICore
 
                 if (pagedData is null)
                 {
-                    return Response.Failure<IReadOnlyList<TModel>>([new ErrorResponse
-                    {
-                        Reason = "Error deserializing response"
-                    }]);
+                    return Response.Failure<IReadOnlyList<TModel>>([
+                        new ErrorResponse { Reason = "Error deserializing response" }
+                    ]);
                 }
             }
             catch (Exception e)
             {
-                return Response.Failure<IReadOnlyList<TModel>>([new ErrorResponse
-                {
-                    Reason = $"Error deserializing response: {e.Message}"
-                }]);
+                return Response.Failure<IReadOnlyList<TModel>>([
+                    new ErrorResponse { Reason = $"Error deserializing response: {e.Message}" }
+                ]);
             }
 
             results.AddRange(pagedData.Data.Select(x => x.ToDomain()));
@@ -146,20 +147,16 @@ internal sealed class LinodeClient : ILinodeClient, ICore
 
             if (domain is null)
             {
-                return Response.Failure<TModel>([new ErrorResponse
-                {
-                    Reason = "Error deserializing response"
-                }]);
+                return Response.Failure<TModel>([new ErrorResponse { Reason = "Error deserializing response" }]);
             }
 
             return Response.Success(domain.ToDomain());
         }
         catch (Exception e)
         {
-            return Response.Failure<TModel>([new ErrorResponse
-            {
-                Reason = $"Error deserializing response: {e.Message}"
-            }]);
+            return Response.Failure<TModel>([
+                new ErrorResponse { Reason = $"Error deserializing response: {e.Message}" }
+            ]);
         }
     }
 
@@ -170,5 +167,24 @@ internal sealed class LinodeClient : ILinodeClient, ICore
 
         using var doc = JsonDocument.Parse(jsonResponse);
         return doc.RootElement.GetProperty(topLevelElement).GetRawText();
+    }
+
+    public async Task<Response<TResponse>> PostRequest<TResponse, TRequest, TApiResponse>(string path, TRequest model,
+        CancellationToken cancellationToken)
+        where TApiResponse : IMapsTo<TResponse>
+        where TRequest : notnull
+    {
+        var body = JsonSerializer.Serialize(model, _jsonSerializerOptions);
+
+        using var httpContent = new StringContent(body);
+        httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+        using var request = new HttpRequestMessage(HttpMethod.Post, path);
+        request.Content = httpContent;
+
+        using var response = await HttpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
+
+        return await GetDomainObjectFromResponse<TResponse, TApiResponse>(response, cancellationToken)
+            .ConfigureAwait(false);
     }
 }

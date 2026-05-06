@@ -3,7 +3,7 @@ namespace Linode.Models.Domains;
 /// <summary>
 /// A single record on a Domain.
 /// </summary>
-public sealed record DomainRecord
+public record DomainRecord
 {
     /// <summary>
     /// When this Domain Record was created.
