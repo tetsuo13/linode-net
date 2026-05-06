@@ -53,7 +53,7 @@ internal sealed class LinodeClient : ILinodeClient, ICore
 
         try
         {
-            var jsonResponse = await GetChildObjectFromJson(httpResponse.Content, "errors", cancellationToken)
+            var jsonResponse = await JsonHelpers.GetChildObjectFromJson(httpResponse.Content, "errors", cancellationToken)
                 .ConfigureAwait(false);
             var errors = JsonSerializer.Deserialize<List<ErrorResponse>>(jsonResponse, _jsonSerializerOptions);
 
@@ -158,15 +158,6 @@ internal sealed class LinodeClient : ILinodeClient, ICore
                 new ErrorResponse { Reason = $"Error deserializing response: {e.Message}" }
             ]);
         }
-    }
-
-    public async Task<string> GetChildObjectFromJson(HttpContent content, string topLevelElement,
-        CancellationToken cancellationToken)
-    {
-        var jsonResponse = await content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-
-        using var doc = JsonDocument.Parse(jsonResponse);
-        return doc.RootElement.GetProperty(topLevelElement).GetRawText();
     }
 
     public async Task<Response<TResponse>> PostRequest<TResponse, TRequest, TApiResponse>(string path, TRequest model,

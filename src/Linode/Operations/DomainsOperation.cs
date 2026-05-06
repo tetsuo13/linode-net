@@ -138,7 +138,7 @@ internal sealed class DomainsOperation : IDomainsOperation
             return httpResponseError.ErrorResponse;
         }
 
-        var jsonResponse = await _core.GetChildObjectFromJson(response.Content, "zone_file", cancellationToken)
+        var jsonResponse = await JsonHelpers.GetChildObjectFromJson(response.Content, "zone_file", cancellationToken)
             .ConfigureAwait(false);
 
         var zoneFile = JsonSerializer.Deserialize<IReadOnlyList<string>>(jsonResponse, _jsonSerializerOptions);
