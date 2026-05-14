@@ -5,6 +5,7 @@ using Linode.Helpers;
 using Linode.Models;
 using Linode.Models.Domains;
 using Linode.Models.Domains.Internal;
+using Linode.Transport;
 
 namespace Linode.Operations;
 
@@ -14,14 +15,19 @@ internal sealed class DomainsOperation : IDomainsOperation
 
     public IDomainsRecordsOperation Records { get; }
 
-    private readonly ICore _core;
+    private readonly IHttpConnection _httpConnection;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-    public DomainsOperation(ICore core)
+    public DomainsOperation()
     {
-        Records = new DomainsRecordsOperation(core);
+        throw new InvalidOperationException("Parameterless constructor exists for unit tests only");
+    }
 
-        _core = core;
+    public DomainsOperation(IHttpConnection httpConnection)
+    {
+        _httpConnection = httpConnection;
+        Records = new DomainsRecordsOperation(_httpConnection);
+
         _jsonSerializerOptions = new JsonSerializerOptions
         {
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
@@ -35,33 +41,13 @@ internal sealed class DomainsOperation : IDomainsOperation
         };
     }
 
-    public async Task<Response<Domain>> Create(CreateDomain createDomain, CancellationToken cancellationToken)
-    {
-        if (!createDomain.IsValid)
-        {
-            throw new InvalidDataException($"Invalid domain, check ${nameof(CreateDomain.IsValid)} property first");
-        }
-
-        return await _core.PostRequest<Domain, CreateDomainRequest, DomainResponse>($"{BasePath}",
+    public async Task<Response<Domain>> Create(CreateDomain createDomain, CancellationToken cancellationToken) =>
+        await _httpConnection.PostRequest<Domain, CreateDomainRequest, DomainResponse>($"{BasePath}",
             createDomain.ToRequest(), cancellationToken).ConfigureAwait(false);
 
-        var domainRequest = createDomain.ToRequest();
-        var body = JsonSerializer.Serialize(domainRequest, _jsonSerializerOptions);
-
-        using var httpContent = new StringContent(body);
-        httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-
-        using var request = new HttpRequestMessage(HttpMethod.Post, $"{BasePath}");
-        request.Content = httpContent;
-
-        using var response = await _core.HttpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
-
-        return await _core.GetDomainObjectFromResponse<Domain, DomainResponse>(response, cancellationToken)
-            .ConfigureAwait(false);
-    }
-
     public async Task<Response<IReadOnlyList<Domain>>> List(CancellationToken cancellationToken) =>
-        await _core.GetPagedResult<Domain, DomainResponse>(BasePath, cancellationToken).ConfigureAwait(false);
+        await _httpConnection.GetPagedResult<Domain, DomainResponse>(BasePath, cancellationToken)
+            .ConfigureAwait(false);
 
     public async Task<Response<Domain>> ImportFromRemoteNameserver(string name, string remoteNameserver,
         CancellationToken cancellationToken)
@@ -79,19 +65,19 @@ internal sealed class DomainsOperation : IDomainsOperation
         using var httpContent = new StringContent(body);
         httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
-        using var response = await _core.HttpClient.PostAsync($"{BasePath}/import", httpContent, cancellationToken)
+        using var response = await _httpConnection.HttpClient.PostAsync($"{BasePath}/import", httpContent, cancellationToken)
             .ConfigureAwait(false);
 
-        return await _core.GetDomainObjectFromResponse<Domain, DomainResponse>(response, cancellationToken)
+        return await _httpConnection.GetDomainObjectFromResponse<Domain, DomainResponse>(response, cancellationToken)
             .ConfigureAwait(false);
     }
 
     public async Task<Response<Domain>> Get(int id, CancellationToken cancellationToken)
     {
-        using var response = await _core.HttpClient.GetAsync($"{BasePath}/{id}", cancellationToken)
+        using var response = await _httpConnection.HttpClient.GetAsync($"{BasePath}/{id}", cancellationToken)
             .ConfigureAwait(false);
 
-        return await _core.GetDomainObjectFromResponse<Domain, DomainResponse>(response, cancellationToken)
+        return await _httpConnection.GetDomainObjectFromResponse<Domain, DomainResponse>(response, cancellationToken)
             .ConfigureAwait(false);
     }
 
@@ -103,10 +89,10 @@ internal sealed class DomainsOperation : IDomainsOperation
         using var httpContent = new StringContent(body);
         httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
-        using var response = await _core.HttpClient.PutAsync($"{BasePath}/{id}", httpContent, cancellationToken)
+        using var response = await _httpConnection.HttpClient.PutAsync($"{BasePath}/{id}", httpContent, cancellationToken)
             .ConfigureAwait(false);
 
-        return await _core.GetDomainObjectFromResponse<Domain, DomainResponse>(response, cancellationToken)
+        return await _httpConnection.GetDomainObjectFromResponse<Domain, DomainResponse>(response, cancellationToken)
             .ConfigureAwait(false);
     }
 
@@ -114,10 +100,10 @@ internal sealed class DomainsOperation : IDomainsOperation
     {
         ArgumentOutOfRangeException.ThrowIfLessThan(id, 1);
 
-        using var response = await _core.HttpClient.DeleteAsync($"{BasePath}/{id}", cancellationToken)
+        using var response = await _httpConnection.HttpClient.DeleteAsync($"{BasePath}/{id}", cancellationToken)
             .ConfigureAwait(false);
 
-        var httpResponseError = await _core.CheckForHttpResponseErrors<Domain>(response, cancellationToken)
+        var httpResponseError = await _httpConnection.CheckForHttpResponseErrors<Domain>(response, cancellationToken)
             .ConfigureAwait(false);
 
         return httpResponseError.HasError ? httpResponseError.ErrorResponse : Response.Success();
@@ -127,10 +113,10 @@ internal sealed class DomainsOperation : IDomainsOperation
     {
         ArgumentOutOfRangeException.ThrowIfLessThan(id, 1);
 
-        using var response = await _core.HttpClient.GetAsync($"{BasePath}/{id}/zone-file", cancellationToken)
+        using var response = await _httpConnection.HttpClient.GetAsync($"{BasePath}/{id}/zone-file", cancellationToken)
             .ConfigureAwait(false);
 
-        var httpResponseError = await _core.CheckForHttpResponseErrors<IReadOnlyList<string>>(response,
+        var httpResponseError = await _httpConnection.CheckForHttpResponseErrors<IReadOnlyList<string>>(response,
             cancellationToken).ConfigureAwait(false);
 
         if (httpResponseError.HasError)
@@ -173,10 +159,10 @@ internal sealed class DomainsOperation : IDomainsOperation
         using var httpContent = new StringContent(body);
         httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
-        using var response = await _core.HttpClient.PostAsync($"{BasePath}/{id}/clone", httpContent, cancellationToken)
+        using var response = await _httpConnection.HttpClient.PostAsync($"{BasePath}/{id}/clone", httpContent, cancellationToken)
             .ConfigureAwait(false);
 
-        return await _core.GetDomainObjectFromResponse<Domain, DomainResponse>(response, cancellationToken)
+        return await _httpConnection.GetDomainObjectFromResponse<Domain, DomainResponse>(response, cancellationToken)
             .ConfigureAwait(false);
     }
 }

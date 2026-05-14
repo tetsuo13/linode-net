@@ -1,5 +1,8 @@
 namespace Linode.Models.Domains;
 
+/// <summary>
+/// The type of domain, authoritative or a read-only copy.
+/// </summary>
 public enum DomainType
 {
     /// <summary>

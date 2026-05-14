@@ -3,6 +3,9 @@ using Linode.Models.Domains;
 
 namespace Linode.Operations;
 
+/// <summary>
+/// Interface related to domain records in Linode's DNS Manager.
+/// </summary>
 public interface IDomainsRecordsOperation
 {
     /// <summary>

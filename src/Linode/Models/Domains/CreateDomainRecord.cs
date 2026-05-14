@@ -16,28 +16,6 @@ public record CreateDomainRecord
     public required DomainRecordType Type { get; set; }
     public int? Weight { get; set; }
 
-    public bool IsValid
-    {
-        get
-        {
-            switch (Type)
-            {
-                case DomainRecordType.A when string.IsNullOrEmpty(Target):
-                case DomainRecordType.AAAA when string.IsNullOrEmpty(Target):
-                case DomainRecordType.SRV when !Port.HasValue || !Priority.HasValue || string.IsNullOrEmpty(Service):
-                case DomainRecordType.CAA when !Tag.HasValue:
-                case DomainRecordType.NS when string.IsNullOrEmpty(Target):
-                case DomainRecordType.CNAME when string.IsNullOrEmpty(Target) || string.IsNullOrEmpty(Name):
-                case DomainRecordType.TXT when string.IsNullOrEmpty(Target):
-                case DomainRecordType.PTR when string.IsNullOrEmpty(Target):
-                    return false;
-
-                default:
-                    return true;
-            }
-        }
-    }
-
     internal CreateDomainRecordRequest ToRequest() => new()
     {
         Name = Name,

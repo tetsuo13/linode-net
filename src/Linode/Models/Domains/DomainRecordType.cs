@@ -1,5 +1,8 @@
 namespace Linode.Models.Domains;
 
+/// <summary>
+/// The type of Record this is in the DNS system.
+/// </summary>
 public enum DomainRecordType
 {
     /// <summary>

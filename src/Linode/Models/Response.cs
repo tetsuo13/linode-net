@@ -1,7 +1,13 @@
 namespace Linode.Models;
 
+/// <summary>
+/// The basic response object used for all responses from HTTP requests.
+/// </summary>
 public record Response
 {
+    /// <summary>
+    /// Indicates whether the request was successful.
+    /// </summary>
     public bool Successful { get; private init; }
 
     /// <summary>

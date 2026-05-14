@@ -1,0 +1,32 @@
+<Project>
+  <PropertyGroup>
+    <VersionPrefix>1.0.0</VersionPrefix>
+    <Copyright>Copyright 2026 Andrei Nicholson</Copyright>
+    <PackageId>$(AssemblyName)</PackageId>
+    <Features>strict</Features>
+    <Authors>Andrei Nicholson</Authors>
+    <PackageReleaseNotes>https://github.com/tetsuo13/linode-net/blob/main/CHANGELOG.md</PackageReleaseNotes>
+    <PackageProjectUrl>https://github.com/tetsuo13/linode-net</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <LangVersion>latest</LangVersion>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/tetsuo13/linode-net.git</RepositoryUrl>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>embedded</DebugType>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <IncludeSymbols>false</IncludeSymbols>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(Configuration)' == 'Release' and '$(SourceRoot)'==''">
+    <SourceRoot Include="$(MSBuildThisFileDirectory)/" />
+  </ItemGroup>
+</Project>
+

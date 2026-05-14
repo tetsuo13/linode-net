@@ -3,8 +3,14 @@ using Linode.Models.Domains;
 
 namespace Linode.Operations;
 
+/// <summary>
+/// Operations related to domains in Linode's DNS Manager.
+/// </summary>
 public interface IDomainsOperation
 {
+    /// <summary>
+    /// Operations related to domain records in Linode's DNS Manager.
+    /// </summary>
     IDomainsRecordsOperation Records { get; }
 
     /// <summary>

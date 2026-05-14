@@ -4,19 +4,7 @@
 
 Linode API client is a library that provides an easy way to interact with the [Linode API](https://techdocs.akamai.com/linode-api/reference/api-summary).
 
-## Usage Examples
-
-Uses the Microsoft.Extensions.DependencyInjection library to handle all setup. Call an extension method to take care of it:
-
-```csharp
-var builder = Host.CreateApplicationBuilder(args);
-
-// Get personal access token (PAT) from AWS Secrets Manager, Key Vault, or wherever...
-
-builder.Services.AddLinodeApi(pat);
-```
-
-Let dependency injection take care of providing the instance variable by referencing `ILinodeClient` where you need it.
+Currently only supports authentication via a personal access token (PAT). See the [getting started with the Linode API doc](https://techdocs.akamai.com/linode-api/reference/get-started#authentication) for info on managing PATs.
 
 ## Supported Operations
 
@@ -25,7 +13,7 @@ Let dependency injection take care of providing the instance variable by referen
 | Administration | |
 | Beta Programs | |
 | Databases | |
-| Domains | Completed |
+| Domains | Complete |
 | Identity and Access | |
 | Images | |
 | Linode Instances | |
@@ -48,6 +36,20 @@ Let dependency injection take care of providing the instance variable by referen
 | Tags | |
 | Volumes | |
 | VPCs | |
+
+## Usage
+
+Uses the Microsoft.Extensions.DependencyInjection library to handle all setup. Call an extension method to take care of it:
+
+```csharp
+var builder = Host.CreateApplicationBuilder(args);
+
+// Get personal access token (PAT) from AWS Secrets Manager, Key Vault, or wherever...
+
+builder.Services.AddLinodeApi(pat);
+```
+
+Let dependency injection take care of providing the instance variable by referencing `ILinodeClient` where you need it.
 
 ## Copyright and License
 

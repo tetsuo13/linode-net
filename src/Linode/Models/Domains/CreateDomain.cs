@@ -2,7 +2,7 @@ using Linode.Models.Domains.Internal;
 
 namespace Linode.Models.Domains;
 
-public class CreateDomain
+public record CreateDomain
 {
     public List<string>? AxfrIps { get; set; }
     public string? Description { get; set; }
@@ -16,9 +16,6 @@ public class CreateDomain
     public List<string>? Tags { get; set; }
     public int? TtlExp { get; set; }
     public required DomainType Type { get; set; }
-
-    public bool IsValid => Type == DomainType.Slave ||
-                           Type == DomainType.Master && !string.IsNullOrEmpty(SoaEmail);
 
     internal CreateDomainRequest ToRequest() => new()
     {
