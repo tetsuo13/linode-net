@@ -37,7 +37,7 @@ Currently only supports authentication via a personal access token (PAT). See th
 | Volumes | |
 | VPCs | |
 
-## Usage
+## Basic Usage
 
 Uses the Microsoft.Extensions.DependencyInjection library to handle all setup. Call an extension method to take care of it:
 
@@ -51,9 +51,22 @@ builder.Services.AddLinodeApi(pat);
 
 Let dependency injection take care of providing the instance variable by referencing `ILinodeClient` where you need it.
 
-## Copyright and License
+```csharp
+using Linode;
 
-Copyright 2026 Andrei Nicholson
+var domainsList = await _linodeClient.Domains.List(cancellationToken);
 
-Licensed under the [MIT License](./LICENSE)
+if (!domainsList.Successful || domainsList.Data is null)
+{
+    _logger.LogError("Error getting list of domains: {@Errors}", domainList.Errors);
+    return;
+}
+
+foreach (var domain in domainsList.Data)
+{
+    // Do something with domain
+}
+```
+
+All API calls return a [`Response`](./src/Linode/Models/Response.cs) object that indicates whether it was successful via the `Successful` property. If not, examine the `Errors` property for a collection of reasons why the call failed. If it was successful then the `Data` property will contain any data that was requested or returned. Not all API calls return data.
 
