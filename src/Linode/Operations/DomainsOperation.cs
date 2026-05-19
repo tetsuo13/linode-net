@@ -1,6 +1,5 @@
 using System.Net.Http.Headers;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using Linode.Helpers;
 using Linode.Models;
 using Linode.Models.Domains;
@@ -16,7 +15,6 @@ internal sealed class DomainsOperation : IDomainsOperation
     public IDomainsRecordsOperation Records { get; }
 
     private readonly IHttpConnection _httpConnection;
-    private readonly JsonSerializerOptions _jsonSerializerOptions;
 
     public DomainsOperation()
     {
@@ -27,18 +25,6 @@ internal sealed class DomainsOperation : IDomainsOperation
     {
         _httpConnection = httpConnection;
         Records = new DomainsRecordsOperation(_httpConnection);
-
-        _jsonSerializerOptions = new JsonSerializerOptions
-        {
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-            Converters =
-            {
-                // To avoid additional attributes, convert the names to
-                // lowercase knowing they're single words. No worries about
-                // next word's starting casing.
-                new JsonStringEnumConverter(JsonNamingPolicy.KebabCaseLower)
-            }
-        };
     }
 
     public async Task<Response<Domain>> Create(CreateDomain createDomain, CancellationToken cancellationToken) =>
@@ -60,7 +46,7 @@ internal sealed class DomainsOperation : IDomainsOperation
             Domain = name,
             RemoteNameserver = remoteNameserver
         };
-        var body = JsonSerializer.Serialize(importRequest, _jsonSerializerOptions);
+        var body = JsonSerializer.Serialize(importRequest, _httpConnection.JsonSerializerOptions);
 
         using var httpContent = new StringContent(body);
         httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
@@ -84,7 +70,7 @@ internal sealed class DomainsOperation : IDomainsOperation
     public async Task<Response<Domain>> Update(int id, UpdateDomain updateDomain, CancellationToken cancellationToken)
     {
         var domainRequest = updateDomain.ToRequest();
-        var body = JsonSerializer.Serialize(domainRequest, _jsonSerializerOptions);
+        var body = JsonSerializer.Serialize(domainRequest, _httpConnection.JsonSerializerOptions);
 
         using var httpContent = new StringContent(body);
         httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
@@ -127,7 +113,8 @@ internal sealed class DomainsOperation : IDomainsOperation
         var jsonResponse = await JsonHelpers.GetChildObjectFromJson(response.Content, "zone_file", cancellationToken)
             .ConfigureAwait(false);
 
-        var zoneFile = JsonSerializer.Deserialize<IReadOnlyList<string>>(jsonResponse, _jsonSerializerOptions);
+        var zoneFile = JsonSerializer.Deserialize<IReadOnlyList<string>>(jsonResponse,
+            _httpConnection.JsonSerializerOptions);
 
         if (zoneFile is null)
         {
@@ -154,7 +141,7 @@ internal sealed class DomainsOperation : IDomainsOperation
         {
             TargetDomain = targetName
         };
-        var body = JsonSerializer.Serialize(importRequest, _jsonSerializerOptions);
+        var body = JsonSerializer.Serialize(importRequest, _httpConnection.JsonSerializerOptions);
 
         using var httpContent = new StringContent(body);
         httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");

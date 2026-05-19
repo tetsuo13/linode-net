@@ -1,6 +1,5 @@
 using System.Net.Http.Headers;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using Linode.Models;
 using Linode.Models.Domains;
 using Linode.Models.Domains.Internal;
@@ -13,7 +12,6 @@ internal class DomainsRecordsOperation : IDomainsRecordsOperation
     private const string BasePath = "domains";
 
     private readonly IHttpConnection _httpConnection;
-    private readonly JsonSerializerOptions _jsonSerializerOptions;
 
     public DomainsRecordsOperation()
     {
@@ -23,14 +21,6 @@ internal class DomainsRecordsOperation : IDomainsRecordsOperation
     public DomainsRecordsOperation(IHttpConnection httpConnection)
     {
         _httpConnection = httpConnection;
-        _jsonSerializerOptions = new JsonSerializerOptions
-        {
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-            Converters =
-            {
-                new JsonStringEnumConverter(JsonNamingPolicy.KebabCaseLower)
-            }
-        };
     }
 
     public async Task<Response<DomainRecord>> Create(int domainId, CreateDomainRecord record,
@@ -73,7 +63,7 @@ internal class DomainsRecordsOperation : IDomainsRecordsOperation
         ArgumentOutOfRangeException.ThrowIfLessThan(recordId, 1);
 
         var recordRequest = record.ToRequest();
-        var body = JsonSerializer.Serialize(recordRequest, _jsonSerializerOptions);
+        var body = JsonSerializer.Serialize(recordRequest, _httpConnection.JsonSerializerOptions);
 
         using var httpContent = new StringContent(body);
         httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");

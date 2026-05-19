@@ -10,20 +10,22 @@ namespace Linode.Transport;
 internal class HttpConnection : IHttpConnection
 {
     public HttpClient HttpClient { get; }
-
-    private readonly JsonSerializerOptions _jsonSerializerOptions;
+    public JsonSerializerOptions JsonSerializerOptions { get; }
 
     public HttpConnection(HttpClient httpClient)
     {
         HttpClient = httpClient;
 
-        _jsonSerializerOptions = new JsonSerializerOptions
+        JsonSerializerOptions = new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true,
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
             Converters =
             {
-                new JsonStringEnumConverter()
+                // To avoid additional attributes, convert the names to
+                // lowercase knowing they're single words. No worries about
+                // next word's starting casing.
+                new JsonStringEnumConverter(JsonNamingPolicy.KebabCaseLower)
             }
         };
     }
@@ -55,7 +57,7 @@ internal class HttpConnection : IHttpConnection
 
             try
             {
-                pagedData = JsonSerializer.Deserialize<PagedData<TApiResponse>>(jsonResponse, _jsonSerializerOptions);
+                pagedData = JsonSerializer.Deserialize<PagedData<TApiResponse>>(jsonResponse, JsonSerializerOptions);
 
                 if (pagedData is null)
                 {
@@ -92,7 +94,7 @@ internal class HttpConnection : IHttpConnection
         {
             var jsonResponse = await JsonHelpers.GetChildObjectFromJson(httpResponse.Content, "errors", cancellationToken)
                 .ConfigureAwait(false);
-            var errors = JsonSerializer.Deserialize<List<ErrorResponse>>(jsonResponse, _jsonSerializerOptions);
+            var errors = JsonSerializer.Deserialize<List<ErrorResponse>>(jsonResponse, JsonSerializerOptions);
 
             return (true, Response.Failure<T>(errors));
         }
@@ -128,7 +130,7 @@ internal class HttpConnection : IHttpConnection
 
         try
         {
-            var domain = JsonSerializer.Deserialize<TApiResponse>(jsonResponse, _jsonSerializerOptions);
+            var domain = JsonSerializer.Deserialize<TApiResponse>(jsonResponse, JsonSerializerOptions);
 
             if (domain is null)
             {
@@ -150,7 +152,7 @@ internal class HttpConnection : IHttpConnection
         where TApiResponse : IMapsTo<TResponse>
         where TRequest : notnull
     {
-        var body = JsonSerializer.Serialize(model, _jsonSerializerOptions);
+        var body = JsonSerializer.Serialize(model, JsonSerializerOptions);
 
         using var httpContent = new StringContent(body);
         httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");

@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Linode.Models;
 using Linode.Models.Internal;
 
@@ -6,6 +7,7 @@ namespace Linode.Transport;
 internal interface IHttpConnection
 {
     HttpClient HttpClient { get; }
+    JsonSerializerOptions JsonSerializerOptions { get; }
 
     /// <summary>
     ///
