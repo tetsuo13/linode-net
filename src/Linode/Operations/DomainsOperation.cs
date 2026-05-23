@@ -131,11 +131,7 @@ internal sealed class DomainsOperation : IDomainsOperation
     {
         ArgumentOutOfRangeException.ThrowIfLessThan(id, 1);
         ArgumentException.ThrowIfNullOrWhiteSpace(targetName);
-
-        if (targetName.Length > 253)
-        {
-            throw new ArgumentOutOfRangeException(nameof(targetName));
-        }
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(targetName.Length, 253);
 
         var importRequest = new CloneDomainRequest
         {
