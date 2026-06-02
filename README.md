@@ -1,5 +1,6 @@
 # Linode API Client
 
+[![Continuous integration](https://github.com/tetsuo13/linode-net/actions/workflows/ci.yml/badge.svg)](https://github.com/tetsuo13/linode-net/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Linode API client is a library that provides an easy way to interact with the [Linode API](https://techdocs.akamai.com/linode-api/reference/api-summary).
