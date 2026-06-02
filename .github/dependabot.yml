@@ -1,0 +1,16 @@
+version: 2
+updates:
+  - package-ecosystem: nuget
+    directory: /
+    schedule:
+      interval: monthly
+    ignore:
+      # Using range
+      - dependency-name: microsoft.extensions.dependencyinjection.abstractions
+      - dependency-name: microsoft.extensions.http
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+
