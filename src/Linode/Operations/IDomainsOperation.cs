@@ -39,7 +39,7 @@ public interface IDomainsOperation
     /// receive notice of cancellation.
     /// </param>
     /// <returns>
-    /// <see cref="Response"/> object with a collection of domain zonefiles.
+    /// <see cref="Response"/> object with a collection of domains.
     /// </returns>
     /// <seealso href="https://techdocs.akamai.com/linode-api/reference/get-domains"/>
     Task<Response<IReadOnlyList<Domain>>> List(CancellationToken cancellationToken);
@@ -121,7 +121,9 @@ public interface IDomainsOperation
     /// A cancellation token that can be used by other objects or threads to
     /// receive notice of cancellation.
     /// </param>
-    /// <returns></returns>
+    /// <returns>
+    /// <see cref="Response"/> object with a collection of domain zonefiles.
+    /// </returns>
     /// <seealso href="https://techdocs.akamai.com/linode-api/reference/get-domain-zone"/>
     Task<Response<IReadOnlyList<string>>> GetDomainZoneFile(int id, CancellationToken cancellationToken);
 }
