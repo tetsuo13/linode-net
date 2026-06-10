@@ -1,5 +1,4 @@
 using System.Net;
-using Linode.Models;
 using Linode.Models.Regions;
 using Linode.Operations;
 using Linode.Tests.TestHelpers;
@@ -110,6 +109,22 @@ public class RegionsOperationTests
         },
         SiteType = SiteType.Core,
         Status = RegionStatus.Ok
+    };
+
+    // lang=json
+    private const string DefaultRegionAvailabilityJsonResponse = """
+                                                                 {
+                                                                   "available": true,
+                                                                   "plan": "gpu-rtx6000-1.1",
+                                                                   "region": "us-east"
+                                                                 }
+                                                                 """;
+
+    private readonly RegionAvailability _defaultRegionAvailability = new()
+    {
+        Available = true,
+        Plan = "gpu-rtx6000-1.1",
+        Region = "us-east"
     };
 
     [Fact]
@@ -249,19 +264,117 @@ public class RegionsOperationTests
         string json = $$"""{ "errors": [{ "reason": "{{reason}}" }] }""";
 
         using var container = new OperationContainer();
-        var operation = container.Create<DomainsOperation>(statusCode, [json]);
+        var operation = container.Create<RegionsOperation>(statusCode, [json]);
         var response = await operation.List(TestContext.Current.CancellationToken);
 
-        AssertErrorResponse(response, reason);
+        OperationContainer.AssertErrorResponse(response, reason);
     }
 
-    private static void AssertErrorResponse<TResponse>(TResponse response, string expectedReason)
-        where TResponse : Response
+    [Fact]
+    public async Task ListAvailability_ReturnsOneRegion()
     {
-        Assert.False(response.Successful);
-        Assert.NotNull(response.Errors);
-        Assert.Single(response.Errors);
-        Assert.Null(response.Errors[0].Field);
-        Assert.Equal(expectedReason, response.Errors[0].Reason);
+        // lang=json
+        const string jsonResponse = $$"""
+                                      {
+                                        "data": [{{DefaultRegionAvailabilityJsonResponse}}],
+                                        "page": 1,
+                                        "pages": 1,
+                                        "results": 1
+                                      }
+                                      """;
+
+        using var container = new OperationContainer();
+        var operation = container.Create<RegionsOperation>(jsonResponse);
+        var response = await operation.ListAvailability(TestContext.Current.CancellationToken);
+
+        Assert.True(response.Successful);
+        Assert.Null(response.Errors);
+        Assert.NotNull(response.Data);
+        Assert.Single(response.Data);
+        Assert.Equivalent(_defaultRegionAvailability, response.Data[0]);
+    }
+
+    [Fact]
+    public async Task ListAvailability_ReturnsTwoPages()
+    {
+        var jsonResponses = new List<string>
+        {
+            $$"""
+            {
+              "data": [{{DefaultRegionAvailabilityJsonResponse}}],
+              "page": 1,
+              "pages": 2,
+              "results": 2
+            }
+            """,
+            """
+            {
+              "data": [
+                {
+                  "available": true,
+                  "plan": "gpu-rtx6000-1.2",
+                  "region": "us-west"
+                }
+              ],
+              "page": 2,
+              "pages": 2,
+              "results": 2
+            }
+            """
+        };
+
+        var expected2 = new RegionAvailability
+        {
+            Available = true,
+            Plan = "gpu-rtx6000-1.2",
+            Region = "us-west"
+        };
+
+        using var container = new OperationContainer();
+        var operation = container.Create<RegionsOperation>(jsonResponses);
+        var response = await operation.ListAvailability(TestContext.Current.CancellationToken);
+
+        Assert.True(response.Successful);
+        Assert.Null(response.Errors);
+        Assert.NotNull(response.Data);
+        Assert.Equal(2, response.Data.Count);
+        Assert.Equivalent(_defaultRegionAvailability, response.Data[0]);
+        Assert.Equivalent(expected2, response.Data[1]);
+    }
+
+    [Theory]
+    [InlineData(HttpStatusCode.NotFound, "Not found")]
+    [InlineData(HttpStatusCode.Unauthorized, "Invalid Token")]
+    public async Task ListAvailability_InvalidHttpResponseStatus_ReturnsErrorResponse(HttpStatusCode statusCode,
+        string reason)
+    {
+        // lang=json
+        string json = $$"""{ "errors": [{ "reason": "{{reason}}" }] }""";
+
+        using var container = new OperationContainer();
+        var operation = container.Create<RegionsOperation>(statusCode, [json]);
+        var response = await operation.ListAvailability(TestContext.Current.CancellationToken);
+
+        OperationContainer.AssertErrorResponse(response, reason);
+    }
+
+    [Fact]
+    public async Task Get_Ok()
+    {
+        using var container = new OperationContainer();
+        var operation = container.Create<RegionsOperation>([DefaultRegionJsonResponse]);
+        var response = await operation.Get(42, TestContext.Current.CancellationToken);
+
+        OperationContainer.AssertValidDomainResponse(response, _defaultRegion);
+    }
+
+    [Fact]
+    public async Task GetAvailability_Ok()
+    {
+        using var container = new OperationContainer();
+        var operation = container.Create<RegionsOperation>([DefaultRegionAvailabilityJsonResponse]);
+        var response = await operation.GetAvailability(42, TestContext.Current.CancellationToken);
+
+        OperationContainer.AssertValidDomainResponse(response, _defaultRegionAvailability);
     }
 }

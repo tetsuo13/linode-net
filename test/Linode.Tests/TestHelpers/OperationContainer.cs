@@ -1,4 +1,5 @@
 using System.Net;
+using Linode.Models;
 using Linode.Transport;
 
 namespace Linode.Tests.TestHelpers;
@@ -38,6 +39,25 @@ internal sealed class OperationContainer : IDisposable
         Assert.NotNull(operation);
 
         return operation;
+    }
+
+    public static void AssertErrorResponse<TResponse>(TResponse response, string expectedReason)
+        where TResponse : Response
+    {
+        Assert.False(response.Successful);
+        Assert.NotNull(response.Errors);
+        Assert.Single(response.Errors);
+        Assert.Null(response.Errors[0].Field);
+        Assert.Equal(expectedReason, response.Errors[0].Reason);
+    }
+
+    public static void AssertValidDomainResponse<T>(Response<T> response, T expectedData)
+        where T : class
+    {
+        Assert.True(response.Successful);
+        Assert.Null(response.Errors);
+        Assert.NotNull(response.Data);
+        Assert.Equivalent(expectedData, response.Data);
     }
 
     public void Dispose()
