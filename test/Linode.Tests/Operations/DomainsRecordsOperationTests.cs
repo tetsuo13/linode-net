@@ -1,4 +1,3 @@
-using Linode.Models;
 using Linode.Models.Domains;
 using Linode.Operations;
 using Linode.Tests.TestHelpers;
@@ -59,7 +58,7 @@ public class DomainsRecordsOperationTests
         var operation = container.Create<DomainsRecordsOperation>([DefaultDomainRecordJsonResponse]);
         var response = await operation.Create(42, model, TestContext.Current.CancellationToken);
 
-        AssertValidDomainResponse(response);
+        OperationContainer.AssertValidDomainResponse(response, _defaultDomainRecord);
     }
 
     [Theory]
@@ -177,7 +176,7 @@ public class DomainsRecordsOperationTests
         var operation = container.Create<DomainsRecordsOperation>([DefaultDomainRecordJsonResponse]);
         var response = await operation.Get(42, 13, TestContext.Current.CancellationToken);
 
-        AssertValidDomainResponse(response);
+        OperationContainer.AssertValidDomainResponse(response, _defaultDomainRecord);
     }
 
     [Fact]
@@ -192,7 +191,7 @@ public class DomainsRecordsOperationTests
         var operation = container.Create<DomainsRecordsOperation>([DefaultDomainRecordJsonResponse]);
         var response = await operation.Update(42, 13, model, TestContext.Current.CancellationToken);
 
-        AssertValidDomainResponse(response);
+        OperationContainer.AssertValidDomainResponse(response, _defaultDomainRecord);
     }
 
     [Theory]
@@ -216,13 +215,5 @@ public class DomainsRecordsOperationTests
 
         Assert.True(response.Successful);
         Assert.Null(response.Errors);
-    }
-
-    private void AssertValidDomainResponse(Response<DomainRecord> response)
-    {
-        Assert.True(response.Successful);
-        Assert.Null(response.Errors);
-        Assert.NotNull(response.Data);
-        Assert.Equivalent(_defaultDomainRecord, response.Data);
     }
 }

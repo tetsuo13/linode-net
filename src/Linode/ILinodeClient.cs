@@ -11,4 +11,9 @@ public interface ILinodeClient
     /// Operations related to domains in Linode's DNS Manager.
     /// </summary>
     IDomainsOperation Domains { get; }
+
+    /// <summary>
+    /// Operations related to regions.
+    /// </summary>
+    IRegionsOperation Regions { get; }
 }

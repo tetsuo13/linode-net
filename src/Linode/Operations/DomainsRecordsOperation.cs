@@ -13,10 +13,8 @@ internal class DomainsRecordsOperation : IDomainsRecordsOperation
 
     private readonly IHttpConnection _httpConnection;
 
-    public DomainsRecordsOperation()
-    {
+    public DomainsRecordsOperation() =>
         throw new InvalidOperationException("Parameterless constructor exists for unit tests only");
-    }
 
     public DomainsRecordsOperation(IHttpConnection httpConnection)
     {

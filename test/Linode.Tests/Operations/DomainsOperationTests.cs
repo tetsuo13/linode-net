@@ -1,5 +1,4 @@
 using System.Net;
-using Linode.Models;
 using Linode.Models.Domains;
 using Linode.Operations;
 using Linode.Tests.TestHelpers;
@@ -66,7 +65,7 @@ public class DomainsOperationTests
         var operation = container.Create<DomainsOperation>(DefaultDomainJsonResponse);
         var response = await operation.Create(model, TestContext.Current.CancellationToken);
 
-        AssertValidDomainResponse(response);
+        OperationContainer.AssertValidDomainResponse(response, _defaultDomain);
     }
 
     [Fact]
@@ -171,7 +170,7 @@ public class DomainsOperationTests
         var operation = container.Create<DomainsOperation>(statusCode, [json]);
         var response = await operation.List(TestContext.Current.CancellationToken);
 
-        AssertErrorResponse(response, reason);
+        OperationContainer.AssertErrorResponse(response, reason);
     }
 
     [Fact]
@@ -182,7 +181,7 @@ public class DomainsOperationTests
         var response = await operation.ImportFromRemoteNameserver("example.com", "examplenameserver.com",
             TestContext.Current.CancellationToken);
 
-        AssertValidDomainResponse(response);
+        OperationContainer.AssertValidDomainResponse(response, _defaultDomain);
     }
 
     [Theory]
@@ -205,7 +204,7 @@ public class DomainsOperationTests
         var operation = container.Create<DomainsOperation>([DefaultDomainJsonResponse]);
         var response = await operation.Get(42, TestContext.Current.CancellationToken);
 
-        AssertValidDomainResponse(response);
+        OperationContainer.AssertValidDomainResponse(response, _defaultDomain);
     }
 
     [Fact]
@@ -222,7 +221,7 @@ public class DomainsOperationTests
         var operation = container.Create<DomainsOperation>([DefaultDomainJsonResponse]);
         var response = await operation.Update(42, model, TestContext.Current.CancellationToken);
 
-        AssertValidDomainResponse(response);
+        OperationContainer.AssertValidDomainResponse(response, _defaultDomain);
     }
 
     [Fact]
@@ -257,7 +256,7 @@ public class DomainsOperationTests
         var operation = container.Create<DomainsOperation>(statusCode, [json]);
         var response = await operation.Delete(42, TestContext.Current.CancellationToken);
 
-        AssertErrorResponse(response, reason);
+        OperationContainer.AssertErrorResponse(response, reason);
     }
 
     [Fact]
@@ -294,10 +293,7 @@ public class DomainsOperationTests
         var operation = container.Create<DomainsOperation>(jsonResponse);
         var response = await operation.GetDomainZoneFile(42, TestContext.Current.CancellationToken);
 
-        Assert.True(response.Successful);
-        Assert.Null(response.Errors);
-        Assert.NotNull(response.Data);
-        Assert.Equal(expected, response.Data);
+        OperationContainer.AssertValidDomainResponse(response, expected);
     }
 
     [Fact]
@@ -322,7 +318,7 @@ public class DomainsOperationTests
         var operation = container.Create<DomainsOperation>(statusCode, [json]);
         var response = await operation.GetDomainZoneFile(42, TestContext.Current.CancellationToken);
 
-        AssertErrorResponse(response, reason);
+        OperationContainer.AssertErrorResponse(response, reason);
     }
 
     [Theory]
@@ -345,24 +341,6 @@ public class DomainsOperationTests
         var operation = container.Create<DomainsOperation>(DefaultDomainJsonResponse);
         var response = await operation.Clone(42, "example.org", TestContext.Current.CancellationToken);
 
-        AssertValidDomainResponse(response);
-    }
-
-    private static void AssertErrorResponse<TResponse>(TResponse response, string expectedReason)
-        where TResponse : Response
-    {
-        Assert.False(response.Successful);
-        Assert.NotNull(response.Errors);
-        Assert.Single(response.Errors);
-        Assert.Null(response.Errors[0].Field);
-        Assert.Equal(expectedReason, response.Errors[0].Reason);
-    }
-
-    private void AssertValidDomainResponse(Response<Domain> response)
-    {
-        Assert.True(response.Successful);
-        Assert.Null(response.Errors);
-        Assert.NotNull(response.Data);
-        Assert.Equivalent(_defaultDomain, response.Data);
+        OperationContainer.AssertValidDomainResponse(response, _defaultDomain);
     }
 }

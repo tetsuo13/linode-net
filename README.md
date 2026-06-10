@@ -32,7 +32,7 @@ Currently only supports authentication via a personal access token (PAT). See th
 | Object Storage | |
 | Placement Groups | |
 | Profile |  |
-| Regions | |
+| Regions | Complete |
 | Resource Locking | |
 | Support | |
 | Tags | |

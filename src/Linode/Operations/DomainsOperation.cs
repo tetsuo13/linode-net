@@ -16,10 +16,8 @@ internal sealed class DomainsOperation : IDomainsOperation
 
     private readonly IHttpConnection _httpConnection;
 
-    public DomainsOperation()
-    {
+    public DomainsOperation() =>
         throw new InvalidOperationException("Parameterless constructor exists for unit tests only");
-    }
 
     public DomainsOperation(IHttpConnection httpConnection)
     {
