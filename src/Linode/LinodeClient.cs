@@ -7,6 +7,7 @@ internal sealed class LinodeClient : ILinodeClient
 {
     public IDomainsOperation Domains { get; }
     public IRegionsOperation Regions { get; }
+    public ITagsOperation Tags { get; }
 
     public LinodeClient(HttpClient httpClient)
     {
@@ -14,5 +15,6 @@ internal sealed class LinodeClient : ILinodeClient
 
         Domains = new DomainsOperation(httpConnection);
         Regions = new RegionsOperation(httpConnection);
+        Tags = new TagsOperation(httpConnection);
     }
 }

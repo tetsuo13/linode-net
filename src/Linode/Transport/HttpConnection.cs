@@ -25,7 +25,9 @@ internal class HttpConnection : IHttpConnection
                 // To avoid additional attributes, convert the names to
                 // lowercase knowing they're single words. No worries about
                 // next word's starting casing.
-                new JsonStringEnumConverter(JsonNamingPolicy.KebabCaseLower)
+                new JsonStringEnumConverter(JsonNamingPolicy.KebabCaseLower),
+
+                new TaggedObjectConverter()
             }
         };
     }
