@@ -35,7 +35,7 @@ Currently only supports authentication via a personal access token (PAT). See th
 | Regions | Complete |
 | Resource Locking | |
 | Support | |
-| Tags | |
+| Tags | Complete |
 | Volumes | |
 | VPCs | |
 
