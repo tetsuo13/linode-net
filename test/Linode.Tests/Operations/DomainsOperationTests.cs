@@ -2,49 +2,12 @@ using System.Net;
 using Linode.Models.Domains;
 using Linode.Operations;
 using Linode.Tests.TestHelpers;
+using Linode.Tests.TestHelpers.Models;
 
 namespace Linode.Tests.Operations;
 
 public class DomainsOperationTests
 {
-    // lang=json
-    private const string DefaultDomainJsonResponse = """
-                                                     {
-                                                       "axfr_ips": [],
-                                                       "description": null,
-                                                       "domain": "example.org",
-                                                       "expire_sec": 300,
-                                                       "id": 1234,
-                                                       "master_ips": [],
-                                                       "refresh_sec": 301,
-                                                       "retry_sec": 302,
-                                                       "soa_email": "admin@example.org",
-                                                       "status": "active",
-                                                       "tags": [
-                                                         "example tag",
-                                                         "another example"
-                                                       ],
-                                                       "ttl_sec": 303,
-                                                       "type": "master"
-                                                     }
-                                                     """;
-
-    private readonly Domain _defaultDomain = new()
-    {
-        AxfrIps = [],
-        DomainName = "example.org",
-        ExpireSec = 300,
-        Id = 1234,
-        MasterIps = [],
-        RefreshSec = 301,
-        RetrySec = 302,
-        SoaEmail = "admin@example.org",
-        Status = DomainStatus.Active,
-        Tags = ["example tag", "another example"],
-        TtlExp = 303,
-        Type = DomainType.Master
-    };
-
     [Fact]
     public async Task Create_Ok()
     {
@@ -62,10 +25,10 @@ public class DomainsOperationTests
         };
 
         using var container = new OperationContainer();
-        var operation = container.Create<DomainsOperation>(DefaultDomainJsonResponse);
+        var operation = container.Create<DomainsOperation>(DomainModelHelper.DefaultDomainJsonResponse);
         var response = await operation.Create(model, TestContext.Current.CancellationToken);
 
-        OperationContainer.AssertValidDomainResponse(response, _defaultDomain);
+        OperationContainer.AssertValidDomainResponse(response, DomainModelHelper.DefaultDomain);
     }
 
     [Fact]
@@ -74,7 +37,7 @@ public class DomainsOperationTests
         // lang=json
         const string jsonResponse = $$"""
                                       {
-                                        "data": [{{DefaultDomainJsonResponse}}],
+                                        "data": [{{DomainModelHelper.DefaultDomainJsonResponse}}],
                                         "page": 1,
                                         "pages": 1,
                                         "results": 1
@@ -85,11 +48,11 @@ public class DomainsOperationTests
         var operation = container.Create<DomainsOperation>(jsonResponse);
         var response = await operation.List(TestContext.Current.CancellationToken);
 
-        Assert.True(response.Successful);
         Assert.Null(response.Errors);
+        Assert.True(response.Successful);
         Assert.NotNull(response.Data);
         Assert.Single(response.Data);
-        Assert.Equivalent(_defaultDomain, response.Data[0]);
+        Assert.Equivalent(DomainModelHelper.DefaultDomain, response.Data[0]);
     }
 
     [Fact]
@@ -99,7 +62,7 @@ public class DomainsOperationTests
         {
             $$"""
             {
-              "data": [{{DefaultDomainJsonResponse}}],
+              "data": [{{DomainModelHelper.DefaultDomainJsonResponse}}],
               "page": 1,
               "pages": 2,
               "results": 2
@@ -134,7 +97,7 @@ public class DomainsOperationTests
             """
         };
 
-        var expected2 = _defaultDomain with
+        var expected2 = DomainModelHelper.DefaultDomain with
         {
             DomainName = "example.com",
             ExpireSec = 400,
@@ -150,11 +113,11 @@ public class DomainsOperationTests
         var operation = container.Create<DomainsOperation>(jsonResponses);
         var response = await operation.List(TestContext.Current.CancellationToken);
 
-        Assert.True(response.Successful);
         Assert.Null(response.Errors);
+        Assert.True(response.Successful);
         Assert.NotNull(response.Data);
         Assert.Equal(2, response.Data.Count);
-        Assert.Equivalent(_defaultDomain, response.Data[0]);
+        Assert.Equivalent(DomainModelHelper.DefaultDomain, response.Data[0]);
         Assert.Equivalent(expected2, response.Data[1]);
     }
 
@@ -177,11 +140,11 @@ public class DomainsOperationTests
     public async Task ImportFromRemoteNameserver_Ok()
     {
         using var container = new OperationContainer();
-        var operation = container.Create<DomainsOperation>([DefaultDomainJsonResponse]);
+        var operation = container.Create<DomainsOperation>([DomainModelHelper.DefaultDomainJsonResponse]);
         var response = await operation.ImportFromRemoteNameserver("example.com", "examplenameserver.com",
             TestContext.Current.CancellationToken);
 
-        OperationContainer.AssertValidDomainResponse(response, _defaultDomain);
+        OperationContainer.AssertValidDomainResponse(response, DomainModelHelper.DefaultDomain);
     }
 
     [Theory]
@@ -201,10 +164,10 @@ public class DomainsOperationTests
     public async Task Get_Ok()
     {
         using var container = new OperationContainer();
-        var operation = container.Create<DomainsOperation>([DefaultDomainJsonResponse]);
+        var operation = container.Create<DomainsOperation>([DomainModelHelper.DefaultDomainJsonResponse]);
         var response = await operation.Get(42, TestContext.Current.CancellationToken);
 
-        OperationContainer.AssertValidDomainResponse(response, _defaultDomain);
+        OperationContainer.AssertValidDomainResponse(response, DomainModelHelper.DefaultDomain);
     }
 
     [Fact]
@@ -218,10 +181,10 @@ public class DomainsOperationTests
         };
 
         using var container = new OperationContainer();
-        var operation = container.Create<DomainsOperation>([DefaultDomainJsonResponse]);
+        var operation = container.Create<DomainsOperation>([DomainModelHelper.DefaultDomainJsonResponse]);
         var response = await operation.Update(42, model, TestContext.Current.CancellationToken);
 
-        OperationContainer.AssertValidDomainResponse(response, _defaultDomain);
+        OperationContainer.AssertValidDomainResponse(response, DomainModelHelper.DefaultDomain);
     }
 
     [Fact]
@@ -231,8 +194,8 @@ public class DomainsOperationTests
         var operation = container.Create<DomainsOperation>();
         var response = await operation.Delete(42, TestContext.Current.CancellationToken);
 
-        Assert.True(response.Successful);
         Assert.Null(response.Errors);
+        Assert.True(response.Successful);
     }
 
     [Fact]
@@ -338,9 +301,9 @@ public class DomainsOperationTests
     public async Task Clone_Ok()
     {
         using var container = new OperationContainer();
-        var operation = container.Create<DomainsOperation>(DefaultDomainJsonResponse);
+        var operation = container.Create<DomainsOperation>(DomainModelHelper.DefaultDomainJsonResponse);
         var response = await operation.Clone(42, "example.org", TestContext.Current.CancellationToken);
 
-        OperationContainer.AssertValidDomainResponse(response, _defaultDomain);
+        OperationContainer.AssertValidDomainResponse(response, DomainModelHelper.DefaultDomain);
     }
 }

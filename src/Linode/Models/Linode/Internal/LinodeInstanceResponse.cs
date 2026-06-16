@@ -48,16 +48,22 @@ internal sealed record LinodeInstanceResponse : IMapsTo<LinodeInstance>
     public required string Label { get; init; }
 
     [JsonPropertyName("lke_cluster_id")]
-    public string? LkeClusterId { get; init; }
+    public int? LkeClusterId { get; init; }
 
     [JsonPropertyName("locks")]
     public IReadOnlyList<string> Locks { get; init; } = [];
 
     [JsonPropertyName("maintenance_policy")]
-    public MaintenancePolicyType MaintenancePolicy { get; init; }
+    public MaintenancePolicyTypeResponse MaintenancePolicy { get; init; }
 
     [JsonPropertyName("placement_group")]
     public PlacementGroupResponse? PlacementGroup { get; init; }
+
+    [JsonPropertyName("region")]
+    public required string Region { get; init; }
+
+    [JsonPropertyName("site_type")]
+    public SiteType SiteType { get; init; }
 
     [JsonPropertyName("specs")]
     public required LinodeSpecsResponse Specs { get; init; }
@@ -89,9 +95,7 @@ internal sealed record LinodeInstanceResponse : IMapsTo<LinodeInstance>
                 Label = PlacementGroup.Label,
                 MigratingTo = PlacementGroup.MigratingTo,
                 PlacementGroupPolicy = PlacementGroup.PlacementGroupPolicy,
-                PlacementGroupType = PlacementGroup.PlacementGroupType,
-                Region = PlacementGroup.Region,
-                SiteType = PlacementGroup.SiteType
+                PlacementGroupType = PlacementGroup.PlacementGroupType
             };
         }
 
@@ -130,8 +134,15 @@ internal sealed record LinodeInstanceResponse : IMapsTo<LinodeInstance>
             Label = Label,
             LkeClusterId = LkeClusterId,
             Locks = Locks,
-            MaintenancePolicy = MaintenancePolicy,
+            MaintenancePolicy = MaintenancePolicy switch
+            {
+                MaintenancePolicyTypeResponse.LinodeMigrate => MaintenancePolicyType.LinodeMigrate,
+                MaintenancePolicyTypeResponse.LinodePowerOffOn => MaintenancePolicyType.LinodePowerOffOn,
+                _ => throw new NotSupportedException()
+            },
             PlacementGroup = placementGroup,
+            Region = Region,
+            SiteType = SiteType,
             Specs = new LinodeSpecs
             {
                 AcceleratedDevices = Specs.AcceleratedDevices,
@@ -208,12 +219,6 @@ internal sealed record PlacementGroupResponse
 
     [JsonPropertyName("placement_group_type")]
     public PlacementGroupType PlacementGroupType { get; init; }
-
-    [JsonPropertyName("region")]
-    public required string Region { get; init; }
-
-    [JsonPropertyName("site_type")]
-    public SiteType SiteType { get; init; }
 }
 
 internal sealed record LinodeSpecsResponse
@@ -235,4 +240,13 @@ internal sealed record LinodeSpecsResponse
 
     [JsonPropertyName("vcpus")]
     public int Vcpus { get; init; }
+}
+
+internal enum MaintenancePolicyTypeResponse
+{
+    [JsonPropertyName("linode/migrate")]
+    LinodeMigrate,
+
+    [JsonPropertyName("linode/power_off_on")]
+    LinodePowerOffOn
 }

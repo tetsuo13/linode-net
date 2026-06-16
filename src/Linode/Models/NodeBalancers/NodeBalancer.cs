@@ -55,18 +55,6 @@ public record NodeBalancer : ITaggedObject
     public LkeCluster? LkeCluster  {get; init; }
 
     /// <summary>
-    /// Indicates if this NodeBalancer is protected by a lock to prevent
-    /// accidental deletion. If the NodeBalancer has a <c>cannot_delete</c>
-    /// lock, it can't be deleted, but its configurations and backend nodes
-    /// can. If the NodeBalancer has a <c>cannot_delete_with_subresources</c>
-    /// lock, both the NodeBalancer and attached resources such as
-    /// configurations and backend nodes can't be deleted. Only account
-    /// administrators can remove locks using the Delete a resource lock
-    /// operation.
-    /// </summary>
-    public IReadOnlyList<string>? Locks { get; init; }
-
-    /// <summary>
     /// The Region where this NodeBalancer is located. NodeBalancers only
     /// support backends in the same Region.
     /// </summary>
@@ -103,7 +91,7 @@ public record LkeCluster
     /// <summary>
     /// The ID of the related LKE cluster.
     /// </summary>
-    public required string Id { get; init; }
+    public int Id { get; init; }
 
     /// <summary>
     /// The label of the related LKE cluster.

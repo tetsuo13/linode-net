@@ -1,135 +1,14 @@
 using System.Net;
 using System.Text;
-using Linode.Models;
 using Linode.Models.Tags;
-using Linode.Models.Volumes;
 using Linode.Operations;
 using Linode.Tests.TestHelpers;
+using Linode.Tests.TestHelpers.Models;
 
 namespace Linode.Tests.Operations;
 
 public class TagsOperationTests
 {
-    // lang=json
-    private const string DefaultTagsJsonResponse = """
-                                                   {
-                                                     "label": "example tag"
-                                                   }
-                                                   """;
-
-    private readonly Tag _defaultTag = new() { Label = "example tag" };
-
-    private const string DefaultVolumeJsonResponse = """
-                                                     {
-                                                       "created": "2025-01-01T00:01:01",
-                                                       "encryption": "enabled",
-                                                       "filesystem_path": "/dev/disk/by-id/scsi-0Linode_Volume_my-volume",
-                                                       "hardware_type": "nvme",
-                                                       "id": 12345,
-                                                       "io_ready": true,
-                                                       "label": "Video-file-storage",
-                                                       "linode_id": 12346,
-                                                       "linode_label": "linode123",
-                                                       "locks": [
-                                                         "cannot_delete"
-                                                       ],
-                                                       "region": "us-iad",
-                                                       "size": 30,
-                                                       "status": "active",
-                                                       "tags": [
-                                                         "blk-stg-volume-1",
-                                                         "videos-storage"
-                                                       ],
-                                                       "updated": "2025-01-01T00:01:01"
-                                                     }
-                                                     """;
-
-    private readonly Volume _defaultVolume = new()
-    {
-        Created = new DateTime(2025, 1, 1, 0, 1, 1),
-        Toggle = ToggleType.Enabled,
-        FileSystemPath = "/dev/disk/by-id/scsi-0Linode_Volume_my-volume",
-        HardwareType = HardwareType.Nvme,
-        Id = 12345,
-        IoReady = true,
-        Label = "Video-file-storage",
-        LinodeId = 12346,
-        LinodeLabel = "linode123",
-        Locks = ["cannot_delete"],
-        Region = "us-iad",
-        Size = 30,
-        Status = VolumeStatus.Active,
-        Tags =
-        [
-            "blk-stg-volume-1",
-            "videos-storage"
-        ],
-        Updated = new DateTime(2025, 1, 1, 0, 1, 1)
-    };
-
-    // lang=json
-    private const string DefaultLinodeJsonResponse = """
-                                                     {
-                                                       "alerts": {
-                                                         "cpu": 180,
-                                                         "io": 10000,
-                                                         "network_in": 10,
-                                                         "network_out": 10,
-                                                         "transfer_quota": 80
-                                                       },
-                                                       "backups": {
-                                                         "available": true,
-                                                         "enabled": true,
-                                                         "last_successful": "2018-01-01T00:01:01",
-                                                         "schedule": {
-                                                           "day": "Saturday",
-                                                           "window": "W22"
-                                                         }
-                                                       },
-                                                       "capabilities": [
-                                                         "Block Storage Encryption"
-                                                       ],
-                                                       "created": "2018-01-01T00:01:01",
-                                                       "disk_encryption": "disabled",
-                                                       "group": "Linode-Group",
-                                                       "has_user_data": true,
-                                                       "host_uuid": "1a2bcd34e5f67gh8ij901234567kl89mn01opqr2",
-                                                       "hypervisor": "kvm",
-                                                       "id": 123,
-                                                       "image": "linode/debian13",
-                                                       "interface_generation": "linode",
-                                                       "ipv4": [
-                                                         "203.0.113.1",
-                                                         "192.0.2.1"
-                                                       ],
-                                                       "ipv6": "2001:DB8::/128",
-                                                       "label": "linode123",
-                                                       "lke_cluster_id": 1,
-                                                       "placement_group": {
-                                                         "id": 528,
-                                                         "label": "PG_Miami_failover",
-                                                         "placement_group_policy": "strict",
-                                                         "placement_group_type": "anti-affinity:local"
-                                                       },
-                                                       "region": "us-east",
-                                                       "specs": {
-                                                         "disk": 81920,
-                                                         "gpus": 0,
-                                                         "memory": 4096,
-                                                         "transfer": 4000,
-                                                         "vcpus": 2
-                                                       },
-                                                       "status": "running",
-                                                       "tags": [
-                                                         "example tag",
-                                                         "another example"
-                                                       ],
-                                                       "type": "g6-standard-1",
-                                                       "updated": "2018-01-01T00:01:01",
-                                                       "watchdog_enabled": true
-                                                     }
-                                                     """;
-
     private static string GenerateTaggedObjectsJsonResponse(List<KeyValuePair<TaggedObjectType, string>> taggedObjects)
     {
         var json = new StringBuilder();
@@ -166,7 +45,7 @@ public class TagsOperationTests
         // lang=json
         const string jsonResponse = $$"""
                                       {
-                                        "data": [{{DefaultTagsJsonResponse}}],
+                                        "data": [{{TagModelHelper.DefaultTagsJsonResponse}}],
                                         "page": 1,
                                         "pages": 1,
                                         "results": 1
@@ -177,11 +56,11 @@ public class TagsOperationTests
         var operation = container.Create<TagsOperation>(jsonResponse);
         var response = await operation.List(TestContext.Current.CancellationToken);
 
-        Assert.True(response.Successful);
         Assert.Null(response.Errors);
+        Assert.True(response.Successful);
         Assert.NotNull(response.Data);
         Assert.Single(response.Data);
-        Assert.Equivalent(_defaultTag, response.Data[0]);
+        Assert.Equivalent(TagModelHelper.DefaultTag, response.Data[0]);
     }
 
     [Fact]
@@ -191,7 +70,7 @@ public class TagsOperationTests
         {
             $$"""
               {
-                "data": [{{DefaultTagsJsonResponse}}],
+                "data": [{{TagModelHelper.DefaultTagsJsonResponse}}],
                 "page": 1,
                 "pages": 2,
                 "results": 2
@@ -217,11 +96,11 @@ public class TagsOperationTests
         var operation = container.Create<TagsOperation>(jsonResponses);
         var response = await operation.List(TestContext.Current.CancellationToken);
 
-        Assert.True(response.Successful);
         Assert.Null(response.Errors);
+        Assert.True(response.Successful);
         Assert.NotNull(response.Data);
         Assert.Equal(2, response.Data.Count);
-        Assert.Equivalent(_defaultTag, response.Data[0]);
+        Assert.Equivalent(TagModelHelper.DefaultTag, response.Data[0]);
         Assert.Equivalent(expected2, response.Data[1]);
     }
 
@@ -246,7 +125,7 @@ public class TagsOperationTests
         var model = new CreateTag { Label = "example tag" };
 
         using var container = new OperationContainer();
-        var operation = container.Create<TagsOperation>(DefaultTagsJsonResponse);
+        var operation = container.Create<TagsOperation>(TagModelHelper.DefaultTagsJsonResponse);
         var response = await operation.Create(model, TestContext.Current.CancellationToken);
 
         OperationContainer.AssertValidDomainResponse(response, new Tag { Label = "example tag" });
@@ -259,8 +138,8 @@ public class TagsOperationTests
         var operation = container.Create<TagsOperation>();
         var response = await operation.Delete("example tag", TestContext.Current.CancellationToken);
 
-        Assert.True(response.Successful);
         Assert.Null(response.Errors);
+        Assert.True(response.Successful);
     }
 
     [Theory]
@@ -289,12 +168,16 @@ public class TagsOperationTests
         OperationContainer.AssertErrorResponse(response, reason);
     }
 
-    [Fact]
-    public async Task ListTaggedObjects_ReturnsOneTag()
+    [Theory]
+    [InlineData(TaggedObjectType.Domain, DomainModelHelper.DefaultDomainJsonResponse)]
+    [InlineData(TaggedObjectType.Linode, LinodeModelHelper.DefaultLinodeJsonResponse)]
+    [InlineData(TaggedObjectType.NodeBalancer, NodeBalancerModelHelper.DefaultJsonResponse)]
+    [InlineData(TaggedObjectType.Volume, VolumeModelHelper.DefaultVolumeJsonResponse)]
+    public async Task ListTaggedObjects_ReturnsOneTag(TaggedObjectType taggedObjectType, string json)
     {
         var taggedObjects = new List<KeyValuePair<TaggedObjectType, string>>
         {
-            new(TaggedObjectType.Volume, DefaultVolumeJsonResponse)
+            new(taggedObjectType, json)
         };
         var jsonResponse = GenerateTaggedObjectsJsonResponse(taggedObjects);
 
@@ -302,11 +185,32 @@ public class TagsOperationTests
         var operation = container.Create<TagsOperation>(jsonResponse);
         var response = await operation.ListTaggedObjects("derp", TestContext.Current.CancellationToken);
 
-        Assert.True(response.Successful);
         Assert.Null(response.Errors);
+        Assert.True(response.Successful);
         Assert.NotNull(response.Data);
         Assert.Single(response.Data);
-        Assert.Equal(TaggedObjectType.Volume, response.Data[0].Type);
-        Assert.Equivalent(_defaultVolume, response.Data[0].Data);
+        Assert.Equal(taggedObjectType, response.Data[0].Type);
+
+        switch (taggedObjectType)
+        {
+            case TaggedObjectType.Domain:
+                Assert.Equivalent(DomainModelHelper.DefaultDomain, response.Data[0].Data);
+                break;
+
+            case TaggedObjectType.Linode:
+                Assert.Equivalent(LinodeModelHelper.DefaultLinodeInstance, response.Data[0].Data);
+                break;
+
+            case TaggedObjectType.NodeBalancer:
+                Assert.Equivalent(NodeBalancerModelHelper.DefaultNodeBalancer, response.Data[0].Data);
+                break;
+
+            case TaggedObjectType.Volume:
+                Assert.Equivalent(VolumeModelHelper.DefaultVolume, response.Data[0].Data);
+                break;
+
+            default:
+                throw new NotSupportedException($"Missing case for tagged object type {taggedObjectType}");
+        }
     }
 }

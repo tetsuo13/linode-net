@@ -69,7 +69,6 @@ internal sealed record NodeBalancerResponse : IMapsTo<NodeBalancer>
             Ipv6 = Ipv6,
             Label = Label,
             LkeCluster = lkeCluster,
-            Locks = Locks,
             Region = Region,
             Tags = Tags,
             Transfer = new Transfer { In = Transfer.In, Out = Transfer.Out, Total = Transfer.Total },
@@ -82,7 +81,7 @@ internal sealed record NodeBalancerResponse : IMapsTo<NodeBalancer>
 internal sealed record LkeClusterResponse
 {
     [JsonPropertyName("id")]
-    public required string Id { get; init; }
+    public int Id { get; init; }
 
     [JsonPropertyName("label")]
     public required string Label { get; init; }

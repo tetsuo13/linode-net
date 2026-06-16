@@ -93,7 +93,7 @@ public record LinodeInstance : ITaggedObject
     /// <summary>
     /// The ID of the Kubernetes cluster if the Linode is part of cluster.
     /// </summary>
-    public string? LkeClusterId { get; init; }
+    public int? LkeClusterId { get; init; }
 
     /// <summary>
     /// A resource lock applied to the Linode. You can optionally set up this
@@ -111,6 +111,16 @@ public record LinodeInstance : ITaggedObject
     /// the Linode isn't in a placement group.
     /// </summary>
     public PlacementGroup? PlacementGroup { get; init; }
+
+    /// <summary>
+    /// The region where you've deployed the Linode.
+    /// </summary>
+    public required string Region { get; init; }
+
+    /// <summary>
+    /// The Linode region's site type.
+    /// </summary>
+    public SiteType SiteType { get; init; }
 
     /// <summary>
     /// Information about the resources available to this Linode.
@@ -456,16 +466,6 @@ public record PlacementGroup
     /// How Linodes are distributed in your placement group.
     /// </summary>
     public PlacementGroupType PlacementGroupType { get; init; }
-
-    /// <summary>
-    /// The region where you've deployed the Linode.
-    /// </summary>
-    public required string Region { get; init; }
-
-    /// <summary>
-    /// The Linode region's site type.
-    /// </summary>
-    public SiteType SiteType { get; init; }
 }
 
 /// <summary>
