@@ -110,7 +110,7 @@ public record LkeCluster
 }
 
 /// <summary>
-/// Info for a NodeBalacer's transfer for the month.
+/// Info for a NodeBalancer's transfer for the month.
 /// </summary>
 public record Transfer
 {
@@ -130,4 +130,20 @@ public record Transfer
     /// The total transfer, in MB, used by this NodeBalancer this month.
     /// </summary>
     public decimal? Total { get; init; }
+}
+
+/// <summary>
+/// The type of NodeBalancer.
+/// </summary>
+public enum NodeBalancerType
+{
+    /// <summary>
+    /// Common
+    /// </summary>
+    Common,
+
+    /// <summary>
+    /// Premium
+    /// </summary>
+    Premium
 }
