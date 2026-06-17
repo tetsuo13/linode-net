@@ -20,8 +20,13 @@ internal class HttpConnection : IHttpConnection
         {
             PropertyNameCaseInsensitive = true,
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+
+            // Order matters!
             Converters =
             {
+                // Converts special characters in slugs to enum-compatible.
+                new EnumSlugConverter(),
+
                 // To avoid additional attributes, convert the names to
                 // lowercase knowing they're single words. No worries about
                 // next word's starting casing.

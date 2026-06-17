@@ -9,36 +9,6 @@ namespace Linode.Tests.Operations;
 
 public class TagsOperationTests
 {
-    private static string GenerateTaggedObjectsJsonResponse(List<KeyValuePair<TaggedObjectType, string>> taggedObjects)
-    {
-        var json = new StringBuilder();
-        json.AppendLine("""
-                        {
-                          "data": [
-                        """);
-
-        foreach (var kvp in taggedObjects)
-        {
-            json.Append('{');
-            json.Append($"\"data\": {kvp.Value},");
-            json.Append($"\"type\": \"{kvp.Key.ToString().ToLowerInvariant()}\"");
-            json.Append("},");
-        }
-
-        // Remove trailing comma.
-        json.Remove(json.Length - 1, 1);
-
-        json.AppendLine("""
-                          ],
-                          "page": 1,
-                          "pages": 1,
-                          "results": 1
-                        }
-                        """);
-
-        return json.ToString();
-    }
-
     [Fact]
     public async Task List_ReturnsOneTag()
     {
@@ -110,7 +80,7 @@ public class TagsOperationTests
     public async Task List_InvalidHttpResponseStatus_ReturnsErrorResponse(HttpStatusCode statusCode, string reason)
     {
         // lang=json
-        string json = $$"""{ "errors": [{ "reason": "{{reason}}" }] }""";
+        var json = $$"""{ "errors": [{ "reason": "{{reason}}" }] }""";
 
         using var container = new OperationContainer();
         var operation = container.Create<TagsOperation>(statusCode, [json]);
@@ -212,5 +182,61 @@ public class TagsOperationTests
             default:
                 throw new NotSupportedException($"Missing case for tagged object type {taggedObjectType}");
         }
+    }
+
+    [Fact]
+    public async Task ListTaggedObjects_ReturnsMultiple()
+    {
+        var taggedObjects = new List<KeyValuePair<TaggedObjectType, string>>
+        {
+            new(TaggedObjectType.Domain, DomainModelHelper.DefaultDomainJsonResponse),
+            new(TaggedObjectType.Volume, VolumeModelHelper.DefaultVolumeJsonResponse)
+        };
+        var jsonResponse = GenerateTaggedObjectsJsonResponse(taggedObjects);
+
+        using var container = new OperationContainer();
+        var operation = container.Create<TagsOperation>(jsonResponse);
+        var response = await operation.ListTaggedObjects("derp", TestContext.Current.CancellationToken);
+
+        Assert.Null(response.Errors);
+        Assert.True(response.Successful);
+        Assert.NotNull(response.Data);
+        Assert.Equal(taggedObjects.Count, response.Data.Count);
+
+        Assert.Equal(TaggedObjectType.Domain, response.Data[0].Type);
+        Assert.Equivalent(DomainModelHelper.DefaultDomain, response.Data[0].Data);
+
+        Assert.Equal(TaggedObjectType.Volume, response.Data[1].Type);
+        Assert.Equivalent(VolumeModelHelper.DefaultVolume, response.Data[1].Data);
+    }
+
+    private static string GenerateTaggedObjectsJsonResponse(List<KeyValuePair<TaggedObjectType, string>> taggedObjects)
+    {
+        var json = new StringBuilder();
+        json.AppendLine("""
+                        {
+                          "data": [
+                        """);
+
+        foreach (var kvp in taggedObjects)
+        {
+            json.Append('{');
+            json.Append($"\"data\": {kvp.Value},");
+            json.Append($"\"type\": \"{kvp.Key.ToString().ToLowerInvariant()}\"");
+            json.Append("},");
+        }
+
+        // Remove trailing comma.
+        json.Remove(json.Length - 1, 1);
+
+        json.AppendLine("""
+                          ],
+                          "page": 1,
+                          "pages": 1,
+                          "results": 1
+                        }
+                        """);
+
+        return json.ToString();
     }
 }

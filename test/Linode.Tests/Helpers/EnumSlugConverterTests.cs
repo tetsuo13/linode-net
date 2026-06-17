@@ -5,7 +5,7 @@ namespace Linode.Tests.Helpers;
 
 public class EnumSlugConverterTests
 {
-    public enum MyEnum
+    public enum TargetType
     {
         LinodeMigrate,
         LinodePowerOffOn,
@@ -17,16 +17,16 @@ public class EnumSlugConverterTests
     public EnumSlugConverterTests()
     {
         _options = new JsonSerializerOptions();
-        _options.Converters.Add(new EnumSlugConverterFactory());
+        _options.Converters.Add(new EnumSlugConverter());
     }
 
     [Theory]
-    [InlineData("linode/migrate", MyEnum.LinodeMigrate)]
-    [InlineData("linode/power_off_on", MyEnum.LinodePowerOffOn)]
-    [InlineData("anti_affinity:local", MyEnum.AntiAffinityLocal)]
-    public void ContainsInvalidSlugs(string slug, MyEnum expected)
+    [InlineData("linode/migrate", TargetType.LinodeMigrate)]
+    [InlineData("linode/power_off_on", TargetType.LinodePowerOffOn)]
+    [InlineData("anti_affinity:local", TargetType.AntiAffinityLocal)]
+    public void InvalidCharacters_ConvertedToEnum(string slug, TargetType expected)
     {
-        var actual = JsonSerializer.Deserialize<MyEnum>($"\"{slug}\"", _options);
+        var actual = JsonSerializer.Deserialize<TargetType>($"\"{slug}\"", _options);
 
         Assert.Equal(expected, actual);
     }

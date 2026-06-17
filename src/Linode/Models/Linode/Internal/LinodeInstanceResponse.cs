@@ -54,7 +54,7 @@ internal sealed record LinodeInstanceResponse : IMapsTo<LinodeInstance>
     public IReadOnlyList<string> Locks { get; init; } = [];
 
     [JsonPropertyName("maintenance_policy")]
-    public MaintenancePolicyTypeResponse MaintenancePolicy { get; init; }
+    public MaintenancePolicyType MaintenancePolicy { get; init; }
 
     [JsonPropertyName("placement_group")]
     public PlacementGroupResponse? PlacementGroup { get; init; }
@@ -134,12 +134,7 @@ internal sealed record LinodeInstanceResponse : IMapsTo<LinodeInstance>
             Label = Label,
             LkeClusterId = LkeClusterId,
             Locks = Locks,
-            MaintenancePolicy = MaintenancePolicy switch
-            {
-                MaintenancePolicyTypeResponse.LinodeMigrate => MaintenancePolicyType.LinodeMigrate,
-                MaintenancePolicyTypeResponse.LinodePowerOffOn => MaintenancePolicyType.LinodePowerOffOn,
-                _ => throw new NotSupportedException()
-            },
+            MaintenancePolicy = MaintenancePolicy,
             PlacementGroup = placementGroup,
             Region = Region,
             SiteType = SiteType,
@@ -191,16 +186,7 @@ internal sealed record BackupsResponse
     public DateTime? LastSuccessful { get; init; }
 
     [JsonPropertyName("schedule")]
-    public required BackupScheduleResponse Schedule { get; init; }
-}
-
-internal sealed record BackupScheduleResponse
-{
-    [JsonPropertyName("day")]
-    public BackupScheduleDay? Day { get; init; }
-
-    [JsonPropertyName("window")]
-    public BackupScheduleWindow? Window { get; init; }
+    public required BackupSchedule Schedule { get; init; }
 }
 
 internal sealed record PlacementGroupResponse
@@ -240,13 +226,4 @@ internal sealed record LinodeSpecsResponse
 
     [JsonPropertyName("vcpus")]
     public int Vcpus { get; init; }
-}
-
-internal enum MaintenancePolicyTypeResponse
-{
-    [JsonPropertyName("linode/migrate")]
-    LinodeMigrate,
-
-    [JsonPropertyName("linode/power_off_on")]
-    LinodePowerOffOn
 }

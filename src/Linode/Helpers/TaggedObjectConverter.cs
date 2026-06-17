@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Linode.Models;
 using Linode.Models.Domains;
 using Linode.Models.Domains.Internal;
 using Linode.Models.Linode;
@@ -13,6 +14,12 @@ using Linode.Models.Volumes.Internal;
 
 namespace Linode.Helpers;
 
+/// <summary>
+/// Converter to handle cases where a "data" object may represent multiple
+/// types. A "data" property may represent different data types depending on
+/// the "type" property value. To represent this as a .NET object, the
+/// <see cref="ITaggedObject"/> interface is used.
+/// </summary>
 internal sealed class TaggedObjectConverter : JsonConverter<TaggedObjectResponse>
 {
     public override TaggedObjectResponse? Read(ref Utf8JsonReader reader, Type typeToConvert,
