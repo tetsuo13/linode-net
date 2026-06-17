@@ -1,7 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Linode.Models.Internal;
+namespace Linode.Helpers;
 
 /// <summary>
 /// Converter to convert enums to and from uppercase strings.

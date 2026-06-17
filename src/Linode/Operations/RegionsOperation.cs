@@ -5,7 +5,7 @@ using Linode.Transport;
 
 namespace Linode.Operations;
 
-internal class RegionsOperation : IRegionsOperation
+internal sealed class RegionsOperation : IRegionsOperation
 {
     private const string BasePath = "regions";
 

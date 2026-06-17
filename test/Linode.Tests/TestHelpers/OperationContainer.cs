@@ -54,8 +54,8 @@ internal sealed class OperationContainer : IDisposable
     public static void AssertValidDomainResponse<T>(Response<T> response, T expectedData)
         where T : class
     {
-        Assert.True(response.Successful);
         Assert.Null(response.Errors);
+        Assert.True(response.Successful);
         Assert.NotNull(response.Data);
         Assert.Equivalent(expectedData, response.Data);
     }

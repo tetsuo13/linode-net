@@ -5,7 +5,7 @@ namespace Linode.Models.Domains;
 /// your registrar to use Linode's nameservers in order for a domain in our
 /// system to be treated as authoritative.
 /// </summary>
-public record Domain
+public record Domain : ITaggedObject
 {
     /// <summary>
     /// The list of IPs that may perform a zone transfer for this domain. The

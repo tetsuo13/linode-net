@@ -16,4 +16,9 @@ public interface ILinodeClient
     /// Operations related to regions.
     /// </summary>
     IRegionsOperation Regions { get; }
+
+    /// <summary>
+    /// Operations related to tags on the account.
+    /// </summary>
+    ITagsOperation Tags { get; }
 }

@@ -7,7 +7,7 @@ using Linode.Transport;
 
 namespace Linode.Operations;
 
-internal class DomainsRecordsOperation : IDomainsRecordsOperation
+internal sealed class DomainsRecordsOperation : IDomainsRecordsOperation
 {
     private const string BasePath = "domains";
 

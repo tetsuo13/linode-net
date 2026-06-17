@@ -71,7 +71,7 @@ public interface IDomainsRecordsOperation
     /// A cancellation token that can be used by other objects or threads to
     /// receive notice of cancellation.
     /// </param>
-    /// <returns></returns>
+    /// <returns><see cref="Response"/> object indicating result.</returns>
     /// <seealso href="https://techdocs.akamai.com/linode-api/reference/delete-domain-record"/>
     Task<Response> Delete(int domainId, int recordId, CancellationToken cancellationToken);
 }
