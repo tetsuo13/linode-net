@@ -41,7 +41,15 @@ public record Response
     };
 }
 
+/// <summary>
+/// The basic response object used for all responses from HTTP requests that
+/// contains a typed data response object.
+/// </summary>
+/// <typeparam name="T">The type matching the data.</typeparam>
 public sealed record Response<T> : Response
 {
+    /// <summary>
+    /// The response data.
+    /// </summary>
     public required T? Data { get; init; }
 }

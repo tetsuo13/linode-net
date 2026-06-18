@@ -26,7 +26,7 @@ public static class ServiceCollectionExtensions
         /// </param>
         /// <returns>The <see cref="IServiceCollection"/>.</returns>
         /// <exception cref="ArgumentNullException">
-        /// Thrown when <paramref name="services"/> or <paramref name="pat"/> is
+        /// Thrown when services or <paramref name="pat"/> is
         /// <see langword="null"/>.
         /// </exception>
         /// <exception cref="ArgumentException">

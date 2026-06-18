@@ -12,7 +12,7 @@ public record Domain : ITaggedObject
     /// total combined length of all data within this array cannot exceed 1000
     /// characters.
     /// </summary>
-    public List<string> AxfrIps { get; set; }
+    public List<string> AxfrIps { get; set; } = [];
 
     /// <summary>
     /// A description for this domain. This is for display purposes only.
@@ -31,24 +31,6 @@ public record Domain : ITaggedObject
     /// <summary>
     /// The amount of time in seconds that may pass before this domain is no
     /// longer authoritative.
-    /// <list type="bullet">
-    /// <item>
-    /// <description>
-    /// Valid values are 0, 30, 120, 300, 3600, 7200, 14400, 28800, 57600,
-    /// 86400, 172800, 345600, 604800, 1209600, and 2419200.
-    /// </description>
-    /// </item>
-    /// <item>
-    /// <description>
-    /// Any other value is rounded up to the nearest valid value.
-    /// </description>
-    /// </item>
-    /// <item>
-    /// <description>
-    /// A value of 0 is equivalent to the default value of 1209600.
-    /// </description>
-    /// </item>
-    /// </list>
     /// </summary>
     public int ExpireSec { get; set; }
 
@@ -63,15 +45,23 @@ public record Domain : ITaggedObject
     /// The total combined length of all data within this array cannot exceed
     /// 1000 characters.
     /// </summary>
-    public List<string> MasterIps { get; set; }
+    public List<string> MasterIps { get; set; } = [];
+
+    /// <summary>
+    /// The amount of time in seconds before this domain should be refreshed.
+    /// </summary>
     public int RefreshSec { get; set; }
+
+    /// <summary>
+    /// The interval, in seconds, at which a failed refresh should be retried.
+    /// </summary>
     public int RetrySec { get; set; }
 
     /// <summary>
     /// Start of Authority email address. This is required for type
     /// <see cref="DomainType.Master"/> domains.
     /// </summary>
-    public string SoaEmail { get; set; }
+    public string SoaEmail { get; set; } = string.Empty;
 
     /// <summary>
     /// Used to control whether this domain is currently being rendered.
@@ -82,8 +72,12 @@ public record Domain : ITaggedObject
     /// An array of tags applied to this object. Tags are for organizational
     /// purposes only.
     /// </summary>
-    public List<string> Tags { get; set; }
+    public List<string> Tags { get; set; } = [];
 
+    /// <summary>
+    /// "Time to Live" - the amount of time in seconds that this domain's
+    /// records may be cached by resolvers or other domain servers.
+    /// </summary>
     public int TtlExp { get; set; }
 
     /// <summary>
