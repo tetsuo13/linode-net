@@ -136,6 +136,8 @@ csharp_space_between_square_brackets = false
 # IDE0290 primary constructor
 csharp_style_prefer_primary_constructors = false
 
+csharp_place_attribute_on_same_line = false
+
 # IDE0008: Use explicit type
 dotnet_diagnostic.IDE0008.severity = silent
 
