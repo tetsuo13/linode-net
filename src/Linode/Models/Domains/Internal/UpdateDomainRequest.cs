@@ -5,19 +5,19 @@ namespace Linode.Models.Domains.Internal;
 internal class UpdateDomainRequest
 {
     [JsonPropertyName("axfr_ips")]
-    public List<string> AxfrIps { get; init; }
+    public List<string> AxfrIps { get; init; } = [];
 
     [JsonPropertyName("description")]
     public string? Description { get; init; }
 
     [JsonPropertyName("domain")]
-    public string Domain { get; init; }
+    public required string Domain { get; init; }
 
     [JsonPropertyName("expire_sec")]
     public int ExpireSec { get; init; }
 
     [JsonPropertyName("master_ips")]
-    public List<string> MasterIps { get; init; }
+    public List<string> MasterIps { get; init; } = [];
 
     [JsonPropertyName("refresh_sec")]
     public int RefreshSec { get; init; }
@@ -26,13 +26,13 @@ internal class UpdateDomainRequest
     public int RetrySec { get; init; }
 
     [JsonPropertyName("soa_email")]
-    public string SoaEmail { get; init; }
+    public string SoaEmail { get; init; } = string.Empty;
 
     [JsonPropertyName("status")]
     public DomainStatus Status { get; init; }
 
     [JsonPropertyName("tags")]
-    public List<string> Tags { get; init; }
+    public List<string> Tags { get; init; } = [];
 
     [JsonPropertyName("ttl_sec")]
     public int TtlExp { get; init; }
