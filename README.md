@@ -22,11 +22,11 @@ Currently only supports authentication via a personal access token (PAT). See th
 | Linode Kubernetes Engine | |
 | Linode StackScripts | |
 | Longview | |
-| Maintenance | |
+| Maintenance | Complete |
 | Managed | |
 | Marketplace | |
 | Monitor | |
-| Network Transfer Prices | |
+| Network Transfer Prices | Complete |
 | Networking | |
 | NodeBalancers | |
 | Object Storage | |
