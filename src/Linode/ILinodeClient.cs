@@ -13,6 +13,11 @@ public interface ILinodeClient
     IDomainsOperation Domains { get; }
 
     /// <summary>
+    /// Operations related to network transfer prices.
+    /// </summary>
+    INetworkTransferPricesOperation NetworkTransferPrices { get; }
+
+    /// <summary>
     /// Operations related to regions.
     /// </summary>
     IRegionsOperation Regions { get; }
