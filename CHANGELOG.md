@@ -2,6 +2,7 @@
 
 ## [Unreleased](https://github.com/tetsuo13/linode-net/compare/1.0.0...main)
 
+- Added Maintenance Policies operation ([#9](https://github.com/tetsuo13/linode-net/pull/9))
 - Added Network Transfer Prices operation ([#8](https://github.com/tetsuo13/linode-net/pull/8))
 - Added Tags operation ([#7](https://github.com/tetsuo13/linode-net/pull/7))
 - Added Regions operation ([#5](https://github.com/tetsuo13/linode-net/pull/5))
