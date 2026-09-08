@@ -13,6 +13,11 @@ public interface ILinodeClient
     IDomainsOperation Domains { get; }
 
     /// <summary>
+    /// Operations related to Linode instances.
+    /// </summary>
+    ILinodeOperation Linode { get; }
+
+    /// <summary>
     /// Operations related to maintenance policies.
     /// </summary>
     IMaintenancePoliciesOperation MaintenancePolicies { get; }
