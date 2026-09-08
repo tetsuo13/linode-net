@@ -10,34 +10,34 @@ Currently only supports authentication via a personal access token (PAT). See th
 
 ## Supported Operations
 
-| Operation | Status |
-| --- | --- |
-| Administration | |
-| Beta Programs | |
-| Databases | |
+| Operation | Status   |
+| --- |----------|
+| Administration |          |
+| Beta Programs |          |
+| Databases |          |
 | Domains | Complete |
-| Identity and Access | |
-| Images | |
-| Linode Instances | |
-| Linode Kubernetes Engine | |
-| Linode StackScripts | |
-| Longview | |
+| Identity and Access |          |
+| Images |          |
+| Linode Instances | Partial |
+| Linode Kubernetes Engine |          |
+| Linode StackScripts |          |
+| Longview |          |
 | Maintenance | Complete |
-| Managed | |
-| Marketplace | |
-| Monitor | |
+| Managed |          |
+| Marketplace |          |
+| Monitor |          |
 | Network Transfer Prices | Complete |
-| Networking | |
-| NodeBalancers | |
-| Object Storage | |
-| Placement Groups | |
-| Profile |  |
+| Networking |          |
+| NodeBalancers |          |
+| Object Storage |          |
+| Placement Groups |          |
+| Profile |          |
 | Regions | Complete |
-| Resource Locking | |
-| Support | |
+| Resource Locking |          |
+| Support |          |
 | Tags | Complete |
-| Volumes | |
-| VPCs | |
+| Volumes |          |
+| VPCs |          |
 
 ## Basic Usage
 
